@@ -1,17 +1,37 @@
+<AppMenu>:
+    height: dp(40)
+    size_hint: 1, None
+
+    canvas.before:
+        Color:
+            rgb: 0.3, 0.2, 0.2
+        Rectangle:
+            pos: self.pos
+            size: self.size
 PageLayout:
     countOfPages: 3
     GridLayout:
         cols: 4
-        rows: 4
+        rows: 2
         Button:
             text: 'button 1'
             # on_press: self.parent.change_page(self.number+1 )
         Button:
             text: 'button 1.2'
+            size: (0.8,0.2)
         Button:
             text: 'button 1.3'
+    StackLayout:
+        align: 'left'
         Button:
-            text: 'button 1.3'
+            text: 'hejooo'
+    GridLayout:
+        cols:3
+        rows:2
+        Button:
+            text: 'button 1.4'
+        Button:
+            text: 'button 1.5'
     Button:
         text: 'button 2'
         # on_press: change_page(self.number+1)

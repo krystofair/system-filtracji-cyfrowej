@@ -2,4 +2,6 @@
 share/
 Scripts/
 Lib/
+libs/
 pyvenv.cfg
+*stats
