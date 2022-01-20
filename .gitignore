@@ -4,4 +4,10 @@ Scripts/
 Lib/
 libs/
 pyvenv.cfg
+# created by christofair
 *stats
+logs/
+config.ini
+icon/
+.idea/
+__pycache__/
