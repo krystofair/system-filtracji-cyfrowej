@@ -1,3 +1,4 @@
+#:import sin math.sin
 BoxLayout:
     id: app_box_layout
     orientation: 'vertical'
@@ -35,31 +36,19 @@ BoxLayout:
                         text: "Item #12"
             AppMenuTextItem:
                 text: 'Exit'
-    FloatLayout:
-        id: filter_float_layout
-        size_hint: 1,100
-        # tutaj powinna być kolejna warstwa,
-        # żeby potem to można dzielić
-        FloatLayout:
-            GridLayout:
-                rows: 2
-                cols: 2
-                # przycisk reprezentujący pierwszą linijkę
-                Button:
-                    size_hint: 2, 1
-                    text: '(dB)'
-                # layout dla widgetu manipulacji lini
-                RelativeLayout:
-                    size_hint: 100, 100
-                    Label:
-                        pos: 0, 0
-                        size: 10, 10
-                        text: 'hej'
-                # pusty label jako przerwa.
-                Label:
-                    size: 20, 20
-                    size_hint: None, None
-                    text: ''
-                Button:
-                    size_hint: 1, 2
-                    text: 'linijka częstotliwości'
+    GridLayout:
+            rows: 1
+            cols: 1
+            Graph:
+                xlabel: 'X'
+                ylabel: 'Y'
+                x_ticks_minor: 5
+                x_ticks_major: 25
+                y_ticks_major: 1
+                xmin: -0
+                xmax: 100
+                ymin: -1
+                ymax: 1
+                MeshLinePlot:
+                    color: [1,0,0,1]
+                    points: [(x, sin(x/10.)) for x in range(0,101)]
