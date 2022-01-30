@@ -9,8 +9,17 @@ przykład:
     DM_CUBIC = 0x01
 """
 
+import kivy.properties as kp
+
+
+
 class MainOptions:
     """ Głowne opcje programu """
+    # app_mode    = kp.StringProperty('design')
+    # audio_path  = kp.StringProperty('')
+    # filter_path = kp.StringProperty('')
+    # audio_fd    = kp.ObjectProperty(None)
+    # filter_fd   = kp.ObjectProperty(None)
     def __init__(self):
         # opcja wybranego trybu
         self.app_mode = 'design' # tryb dzialania aplikacji
@@ -18,6 +27,7 @@ class MainOptions:
         self.filter_path = '' # sciezka pliku filtra
         self.filter_fd = None # plik filtra
         self.audio_fd = None # plik audio
+
 
 class DesignOptions:
     """ Opcje dla trybu projektowania """
@@ -28,6 +38,7 @@ class DesignOptions:
         self.draw_mode = 'cubic'
         # ...
         # self.
+
 
 class VisualizationOptions:
     """ Opcje trybu wizualizacji """
