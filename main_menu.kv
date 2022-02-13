@@ -1,24 +1,16 @@
 FloatLayout:
-    size_hint: 1, 1
     AnchorLayout:
         id: anchor_main_menu
         anchor_x: "left"
         anchor_y: "top"
-        canvas:
-            Color:
-                rgba: 0, 1, 0, 0.2
-            Rectangle:
-                pos: self.pos
-                size: self.size
         MainMenu:
             id: app_menu
-            cancel_handler_widget: alayout
+            cancel_handler_widget: anchor_main_menu
             AppMenuTextItem:
                 text: "FILE"
                 FileMenu:
                     id: file_menu
                     ContextMenuDivider:
-                        text: "Filter"
                     ContextMenuTextItem:
                         text: "Open filter"
                         on_release: file_menu.open_filter_cb()
@@ -26,19 +18,24 @@ FloatLayout:
                         text: "Save filter"
                         on_release: file_menu.save_filter_cb()
                     ContextMenuDivider:
-                        text: "Audio"
                     ContextMenuTextItem:
                         text: "Open audio file"
                         on_release: file_menu.open_audio_cb()
                     ContextMenuTextItem:
                         text: "Save audio file"
                         on_release: file_menu.save_audio_cb()
+                    ContextMenuDivider:
+                    ContextMenuTextItem:
+                        text: "Exit"
+                        on_release: file_menu.exit_option()
             AppMenuTextItem:
                 text: "MODES"
+                main_menu: app_menu
                 ModeMenu:
+                    id: mode_menu
                     ContextMenuTextItem:
                         text: "Design"
-                        on_release: chosen_mode = 'design'
+                        on_release: mode_menu.choose_mode = 'design'
                     ContextMenuTextItem:
                         text: "Visualization"
-                        on_release: chosen_mode = 'visualization'
+                        on_release: mode_menu.choose_mode = 'visualization'
