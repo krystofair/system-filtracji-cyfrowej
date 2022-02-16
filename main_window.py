@@ -114,10 +114,6 @@ class MyGraph(Graph):
                     self.xmin += 2
                     self.xmax -= 2
             return True
-        if touch.button == 'middle':
-            touch.grab(self)
-            self.prev_touch = touch
-            return True
         elif touch.button == 'left':
             touch.grab(self)
             return False
@@ -129,19 +125,12 @@ class MyGraph(Graph):
         return super().on_touch_down(touch)
 
     def on_touch_up(self, touch):
-        if touch.button == 'middle':
-            distance = touch.distance(self.prev_touch)
-            print(distance)
-            self.prev_touch = None
-            touch.ungrab(self)
-            return True
         if touch.button == 'left':
             touch.ungrab(self)
             x, y = self.to_widget(touch.x, touch.y, True)
             if self.collide_plot(x, y):
                 x0, y0 = self.to_data(x, y)
                 self.cubic_plot.add_point(int(x0), y0)
-                print(x0, y0)
                 return True
         elif touch.button == 'right':
             if self.prev_x != -1:
