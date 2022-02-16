@@ -78,14 +78,6 @@ class MyGraph(Graph):
             self.ctrl_is_pressed = False
         return super().on_key_up(keycode)
 
-    def _zooming(self, touch):
-        xc, yc = touch.pos # pozycja kursora
-        ymiddle = math.fabs(self.ymax + self.ymin)/2
-        xmiddle = math.fabs(self.xmax + self.xmin)/2
-        # dobra, jestem za głupi, żeby to napisać xd
-        # bo chyba to jeszcze musi przejść przez funkcję logarytmiczną,
-        # żeby się zgadzało, bo skala jest.
-
     # pseudo działające zoomy
     def _zoom_in(self):
         if self.ymin < -15 and self.ymax > 15:

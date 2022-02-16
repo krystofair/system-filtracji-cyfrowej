@@ -1,4 +1,4 @@
-from kivy_garden.graph import LinePlot, ScatterPlot, Plot
+from kivy_garden.graph import LinePlot, ScatterPlot
 from kivy.properties import NumericProperty, ListProperty, DictProperty, ObjectProperty
 from scipy.interpolate import CubicSpline
 
@@ -9,7 +9,7 @@ class CubicPlot(LinePlot):
     Z pierwszych dwóch punktów jest linia prosta. """
     line_width = NumericProperty(1)
     color = ListProperty([1, 0, 0, 1])
-    color2 = ListProperty([1, 1, 1 ,1])
+    color2 = ListProperty([1, 1, 1, 1])
     s_points = DictProperty()
     point_size = NumericProperty(5)
     scatter_plot = ObjectProperty()
