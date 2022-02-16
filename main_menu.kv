@@ -8,6 +8,7 @@ FloatLayout:
             cancel_handler_widget: anchor_main_menu
             AppMenuTextItem:
                 text: "FILE"
+                main_menu: app_menu
                 FileMenu:
                     id: file_menu
                     ContextMenuDivider:
@@ -31,6 +32,7 @@ FloatLayout:
             AppMenuTextItem:
                 text: "MODES"
                 main_menu: app_menu
+                # dynamic_menu: design_menu
                 ModeMenu:
                     id: mode_menu
                     ContextMenuTextItem:

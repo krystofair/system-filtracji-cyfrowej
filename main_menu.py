@@ -36,7 +36,9 @@ class ModeMenu(ContextMenu):
     choose_mode = StringProperty()
     options = ObjectProperty()
     # main_menu = ObjectProperty()
-    dynamic_menu = ObjectProperty()
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
     def on_choose_mode(self, inst, value):
         try:
