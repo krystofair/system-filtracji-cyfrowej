@@ -146,9 +146,8 @@ class DesignGraph(Graph):
     def on_motion(self, instance, value):
         if self.cursor_pos_bubble is not None:
             self.remove_widget(self.cursor_pos_bubble)
-        x, y = self.to_widget(*value, True)
+        x, y = self.to_widget(*value)
         pos = self.to_data(x, y)
-        print(pos)
         self.cursor_pos_bubble = CursorDataPosBubble(pos)
         self.add_widget(self.cursor_pos_bubble)
         pass
