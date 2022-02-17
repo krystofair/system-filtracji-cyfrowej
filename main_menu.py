@@ -3,9 +3,11 @@ from kivy_garden.contextmenu import AppMenu, ContextMenu, AppMenuTextItem, Conte
 from kivy.properties import ListProperty
 from kivy.properties import ObjectProperty
 from kivy.properties import StringProperty
+from kivy.app import App
 from kivy.lang import Builder
 
 from configs import *
+
 
 class FileMenu(ContextMenu):
 
@@ -45,21 +47,15 @@ class ModeMenu(ContextMenu):
             self.parent.main_menu.remove_widget(self.dynamic_menu)
         except: pass
         if value == 'design':
-            self.dynamic_menu = Builder.load_file('design_submenu.kv')
+            App.get_running_app().set_design_graph()
+            App.get_running_app().set_design_menu(inst)
         elif value == 'visualization':
-            self.dynamic_menu = Builder.load_file('visual_submenu.kv')
-        try:
-            self.parent.main_menu.add_widget(self.dynamic_menu)
-        except Exception as e:
-            print(e)
+            App.get_running_app().set_visual_graph()
+            App.get_running_app().set_visual_menu(inst)
         self.hide()
 
 
-
 class MainMenu(AppMenu):
-    m_opts = ObjectProperty(MainOptions())
-    d_opts = ObjectProperty(DesignOptions())
-    v_opts = ObjectProperty(VisualizationOptions())
 
     def on_touch_down(self, touch):
         for child in self.children:
@@ -67,11 +63,13 @@ class MainMenu(AppMenu):
         return False
     pass
 
+
 class VisualizationMenu(ContextMenu):
 
     def cos(self):
         pass
     pass
+
 
 class DesignMenu(ContextMenu):
     """ callbacks for options """

@@ -4,22 +4,13 @@ FloatLayout:
         id: main_window_layout
         size: root.width, root.height-35
         GridLayout:
+            id: place_for_graph
             size: root.width-2, root.height-35
             size_hint: None, None
             orientation: "tb-lr"
             rows: 2
             cols: 2
-            MyGraph:
-                id: basic_graph
-                ylabel: "Amplitude (dB)"
-                xlabel: "freq (Hz)"
-                y_grid: True
-                y_grid_label: True
-                xlog: True
-                x_ticks_major: 0.1
-                # x_grid: True
-                # x_grid_label: True
-            #MyGraph:
+            #DesignGraph:
             #    id: phase_graph
             #    grid: True
             #    ylabel: "Phase"

@@ -47,9 +47,8 @@ class CubicPlot(LinePlot):
         self.s_points.update({int(x): round(y, ndigits=2)})
 
     def remove_point(self, x, /):
-        for i in range(int(x)-5, int(x)+5):
-            try: self.s_points.pop(i)
-            except: pass
+        try: self.s_points.pop(int(x))
+        except: pass
 
 
 __all__ = ['CubicPlot']
