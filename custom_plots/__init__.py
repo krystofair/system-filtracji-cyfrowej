@@ -31,10 +31,11 @@ class CubicPlot(LinePlot):
     def _interpolate_points(self):
         tmp_points = list(self.s_points.items())
         tmp_points.sort(key=lambda x: x[0])
-        xs, ys = zip(*tmp_points)
-        cs_interpolation = CubicSpline(xs, ys)
-        xmin, xmax = xs[0], xs[len(xs) - 1]
-        self.points = zip(range(xmin, xmax), cs_interpolation(range(xmin, xmax)))
+        if len(tmp_points) >= 2:
+            xs, ys = zip(*tmp_points)
+            interpolation = CubicSpline(xs, ys)
+            xmin, xmax = xs[0], xs[len(xs) - 1]
+            self.points = zip(range(xmin, xmax), interpolation(range(xmin, xmax)))
         return tmp_points
         # del xmin, xmax, xs, ys, tmp_points
 

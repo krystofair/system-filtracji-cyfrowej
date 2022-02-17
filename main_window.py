@@ -9,14 +9,13 @@ os.environ['KIVY_HOME'] = sys.path[0]
 
 import configs
 from custom_graphs import DesignGraph, VisualGraph
-from main_menu import DesignMenu, VisualizationMenu
+from menus import *
 
 import kivy
 from kivy.app import App
 from kivy_garden.contextmenu import AppMenuTextItem
 from kivy.config import Config
 from kivy.uix.floatlayout import FloatLayout
-from main_menu import *
 import kivy.properties as kp
 kivy.require('2.0.0')
 
@@ -75,12 +74,11 @@ class MainWindow(App):
         Config.set('input', 'mouse', 'mouse, disable_multitouch')
         Config.write()
         # utworzenie obiektów opcji w klasie głównej programu
-        mm = Builder.load_file("main_menu.kv")
-        self.main_menu = mm.ids['app_menu']
+        # mm = Builder.load_file("main_menu.kv")
         main_wnd_view = Builder.load_file("main_window.kv")
         self.graph = DesignGraph()
         main_wnd_view.ids['place_for_graph'].add_widget(self.graph)
-        main_wnd_view.add_widget(mm)
+        # main_wnd_view.add_widget(mm)
 
         return main_wnd_view
 

@@ -5,6 +5,21 @@ os.environ['KIVY_HOME'] = sys.path[0]
 from kivy_garden.graph import Graph
 import kivy.properties as kp
 from custom_plots import CubicPlot
+from kivy.uix.bubble import Bubble, BubbleContent
+from kivy.uix.label import Label
+from kivy.core.window import Window
+
+
+class CursorDataPosBubble(Bubble):
+    def __init__(self, pos, **kwargs):
+        super().__init__(**kwargs)
+        # values = ('left_top', 'left_mid', 'left_bottom', 'top_left',
+        #           'top_mid', 'top_right', 'right_top', 'right_mid',
+        #           'right_bottom', 'bottom_left', 'bottom_mid', 'bottom_right')
+        # index = values.index(self.arrow_pos)
+        # self.arrow_pos = values[(index + 1) % len(values)]
+        pos = (round(pos[0], ndigits=2), round(pos[1], ndigits=2))
+        self.add_widget(Label(text=f"{pos[0]}x{pos[1]}"))
 
 
 class DesignGraph(Graph):
@@ -27,12 +42,14 @@ class DesignGraph(Graph):
     shift_is_pressed = kp.BooleanProperty(False)
     prev_touch = kp.ObjectProperty(None, allownone=True)
     prev_x = kp.NumericProperty(-1)
+    cursor_pos_bubble = kp.ObjectProperty()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.cubic_plot = CubicPlot(self.xmin, self.xmax)
         self.add_plot(self.cubic_plot)
         self.add_plot(self.cubic_plot.get_inner_plot())
+        Window.bind(mouse_pos=self.on_motion)
 
     def on_parent(self, widget, parent):
         self.focus = True
@@ -125,8 +142,16 @@ class DesignGraph(Graph):
                 x0, y0 = self.to_data(x,y)
                 self.cubic_plot.add_point(x0, y0)
                 # return True
-        return super().on_touch_move(touch)
 
+    def on_motion(self, instance, value):
+        if self.cursor_pos_bubble is not None:
+            self.remove_widget(self.cursor_pos_bubble)
+        x, y = self.to_widget(*value, True)
+        pos = self.to_data(x, y)
+        print(pos)
+        self.cursor_pos_bubble = CursorDataPosBubble(pos)
+        self.add_widget(self.cursor_pos_bubble)
+        pass
 
 class VisualGraph(Graph):
     pass

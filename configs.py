@@ -4,31 +4,54 @@ W pierwszej wersji jako wartosci opcji to napisy, lecz po refaktoryzacjach
 będzie to zmieniane. """
 
 import kivy.properties as kp
+from custom_graphs import VisualGraph
 
 
 
 class MainOptions:
-    """ Głowne opcje programu """
-    app_mode    = kp.StringProperty('design')
-    audio_path  = kp.StringProperty('')
+    app_mode = kp.StringProperty('design')
+    audio_path = kp.StringProperty('')
     filter_path = kp.StringProperty('')
-    audio_fd    = kp.ObjectProperty(None)
-    filter_fd   = kp.ObjectProperty(None)
-
-    def __init__(self):
-        pass
+    audio_fd = kp.ObjectProperty(None)
+    filter_fd = kp.ObjectProperty(None)
 
 
 class DesignOptions:
     kind_of_filter = kp.StringProperty('fir')
-    draw_mode = kp.StringProperty('cubic')
-    pass
+    interpolation = kp.StringProperty('cubic')
+    filter_algorithm = kp.ObjectProperty(None)
+    start = kp.BooleanProperty(False)
 
 
 class VisualizationOptions:
-    processed_samples = kp.BooleanProperty(False)
-    original_samples = kp.ListProperty([])
-    domain = kp.StringProperty('time')
+    ready_samples = kp.BooleanProperty(False)
+    original_samples = kp.ObjectProperty()
+    tovisual_samples = kp.ObjectProperty()
+    domain = kp.StringProperty('frequency')
+    visual_graph = kp.ObjectProperty()
+    play = kp.BooleanProperty(False)
+    stop = kp.BooleanProperty(True)
 
-    def __init__(self):
-        pass
+    def on_domain(self, instance, value):
+        domain = value if value == 'time' or value == 'frequency' else 'frequency'
+        if self.visual_graph is None: self.visual_graph = VisualGraph()
+        if domain == 'frequency':
+            self.visual_graph.xlog = True
+        else:
+            self.visual_graph.xlog = False
+
+    def get_sample(self):
+        for sample in self.tovisual_samples:
+            yield sample
+
+    def on_play(self, inst, value):
+        if value:
+            self.stop = False
+            print('start clock interval, some thread?')
+            # start clock interval.
+
+    def on_stop(self, inst, value):
+        if value:
+            # stop interval
+            print('stop interval')
+            self.play = False
