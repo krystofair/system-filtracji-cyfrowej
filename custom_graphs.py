@@ -38,8 +38,6 @@ class DesignGraph(Graph):
     xlabel = kp.StringProperty('freq (Hz)')
     visual_mode = kp.BooleanProperty(False)
     cubic_plot = kp.ObjectProperty(None)
-    ctrl_is_pressed = kp.BooleanProperty(False)
-    shift_is_pressed = kp.BooleanProperty(False)
     prev_touch = kp.ObjectProperty(None, allownone=True)
     prev_x = kp.NumericProperty(-1)
     cursor_pos_bubble = kp.ObjectProperty()
@@ -51,19 +49,16 @@ class DesignGraph(Graph):
         self.add_plot(self.cubic_plot.get_inner_plot())
         Window.bind(mouse_pos=self.on_motion)
 
-    def on_parent(self, widget, parent):
-        self.focus = True
-
-    def on_key_down(self, keycode, text, modifiers):
-        print('key is down')
-        if keycode == self.keycodes['rctrl'] or keycode == self.keycodes['lctrl']:
-            self.ctrl_is_pressed = True
-        return super().on_key_down(keycode, text, modifiers)
-
-    def on_key_up(self, keycode):
-        if keycode == self.keycodes['rctrl'] or keycode == self.keycodes['lctrl']:
-            self.ctrl_is_pressed = False
-        return super().on_key_up(keycode)
+    def menu_was_clicked(self, x, y):
+        from menus import MainMenu
+        mainmenu = [m for m in self.walk() if issubclass(m.__class__, MainMenu)][0]
+        for item in mainmenu.walk():
+            try:
+                submenu = item.get_submenu()
+                if submenu.self_or_submenu_collide_with_point(x, y) is not None:
+                    return True
+            except: pass
+        return False
 
     # pseudo działające zoomy
     def _zoom_in(self):
@@ -81,7 +76,9 @@ class DesignGraph(Graph):
             self.ymax += 3
 
     def on_touch_down(self, touch):
-        if touch.is_mouse_scrolling and not self.ctrl_is_pressed:
+        if self.menu_was_clicked(*self.to_widget(touch.x, touch.y, True)):
+            return True
+        if touch.is_mouse_scrolling:
             if touch.button == 'scrolldown':
                 self._zoom_in()
             elif touch.button == 'scrollup':
@@ -91,7 +88,7 @@ class DesignGraph(Graph):
             else:
                 self.y_ticks_major = 3
             return True
-        elif touch.is_mouse_scrolling and self.ctrl_is_pressed:
+        elif touch.is_mouse_scrolling:
             if touch.button == 'scrolldown':
                 if self.xmin >= 10  and self.xmax <= 22000:
                     self.xmin += 2
@@ -107,12 +104,14 @@ class DesignGraph(Graph):
         elif touch.button == 'right':
             x, y = self.to_widget(touch.x, touch.y, True)
             self.cubic_plot.remove_point(self.to_data(x, y)[0])
-            self.prev_x = self.to_data(x,y)[0]
+            self.prev_x = self.to_data(x, y)[0]
             touch.grab(self)
             return False
         return super().on_touch_down(touch)
 
     def on_touch_up(self, touch):
+        if self.menu_was_clicked(*self.to_widget(touch.x, touch.y, True)):
+            return True
         if touch.button == 'left':
             touch.ungrab(self)
             x, y = self.to_widget(touch.x, touch.y, True)

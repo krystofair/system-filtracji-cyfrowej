@@ -1,11 +1,8 @@
 """ Plik `configs` zawiera klasy, które przechowują konfigurację
-dla wybranych trybów. Tryby te zawierają opcje dostepne w menu.
-W pierwszej wersji jako wartosci opcji to napisy, lecz po refaktoryzacjach
-będzie to zmieniane. """
+dla wybranych trybów. Tryby te zawierają opcje dostepne w menu."""
 
 import kivy.properties as kp
 from custom_graphs import VisualGraph
-
 
 
 class MainOptions:

@@ -1,7 +1,6 @@
 #:import Window kivy.core.window.Window
 FloatLayout:
     MainLayout:
-        id: main_window_layout
         size: root.width, root.height-35
         GridLayout:
             id: place_for_graph
@@ -20,73 +19,69 @@ FloatLayout:
             #    xlog: True
             #    x_ticks_major: 0.1
             #    x_grid_label: True
-    FloatLayout:
-        AnchorLayout:
-            id: anchor_main_menu
-            anchor_x: "left"
-            anchor_y: "top"
-            MainMenu:
-                cancel_handler_widget: anchor_main_menu
-                AppMenuTextItem:
-                    text: "FILE"
-                    FileMenu:
-                        ContextMenuDivider:
-                        ContextMenuTextItem:
-                            text: "Open filter"
-                            on_release: self.parent.open_filter_cb()
-                        ContextMenuTextItem:
-                            text: "Save filter"
-                            on_release: self.parent.save_filter_cb()
-                        ContextMenuDivider:
-                        ContextMenuTextItem:
-                            text: "Open audio file"
-                            on_release: self.parent.open_audio_cb()
-                        ContextMenuTextItem:
-                            text: "Save audio file"
-                            on_release: self.parent.save_audio_cb()
-                        ContextMenuDivider:
-                        ContextMenuTextItem:
-                            text: "Exit"
-                            on_release: self.parent.exit_option()
-                AppMenuTextItem:
-                    text: "MODE"
-                    ModeMenu:
-                        ContextMenuTextItem:
-                            text: "Design"
-                            on_release: self.parent.choose_mode = 'design'
-                        ContextMenuTextItem:
-                            text: "Visualization"
-                            on_release: self.parent.choose_mode = 'visualization'
-                AppMenuTextItem:
-                    text: "DESIGN OPTIONS"
-                    DesignMenu:
-                        ContextMenuTextItem:
-                            #text: "interpolation (" + self.parent.interpolation + ")"
-                            text: "interpolation"
-                            ContextMenu:
-                                ContextMenuTextItem:
-                                    text: "cubic"
-                                    on_release: self.parent.interpolation = self.text; self.parent.hide()
-                                ContextMenuTextItem:
-                                    text: "linear"
-                                    on_release: self.parent.interpolation = self.text; self.parent.hide()
-                AppMenuTextItem:
-                    text: "VISUAL OPTIONS"
-                    VisualizationMenu:
-                        ContextMenuTextItem:
-                            #text: "domain (" + self.parent.domain + ")"
-                            text: "domain"
-                            ContextMenu:
-                                ContextMenuTextItem:
-                                    text: "time"
-                                    on_release: self.parent.domain = self.text; self.parent.hide()
-                                ContextMenuTextItem:
-                                    text: "frequency"
-                                    on_release: self.parent.domain = self.text; self.parent.hide()
-                        ContextMenuTextItem:
-                            text: "play"
-                            on_release: self.parent.play = True
-                        ContextMenuTextItem:
-                            text: "stop"
-                            on_release: self.parent.stop = True
-
+    AppMenuALayout:
+        id: anchor_main_menu
+        anchor_y: 'top'
+        MainMenu:
+            orientation: 'tb-lr'
+            cancel_handler_widget: anchor_main_menu
+            AppMenuTextItem:
+                text: "FILE"
+                FileMenu:
+                    ContextMenuDivider:
+                    ContextMenuTextItem:
+                        text: "Open filter"
+                        on_release: self.parent.chosen_option = 'open_filter_cb'
+                    ContextMenuTextItem:
+                        text: "Save filter"
+                        on_release: self.parent.chosen_option = 'save_filter_cb'
+                    ContextMenuDivider:
+                    ContextMenuTextItem:
+                        text: "Open audio file"
+                        on_release: self.parent.chosen_option = 'open_audio_cb'
+                    ContextMenuTextItem:
+                        text: "Save audio file"
+                        on_release: self.parent.chosen_option = 'save_audio_cb'
+                    ContextMenuDivider:
+                    ContextMenuTextItem:
+                        text: "Exit"
+                        on_release: self.parent.chosen_option = 'exit_option'
+            AppMenuTextItem:
+                text: "MODE"
+                ModeMenu:
+                    ContextMenuTextItem:
+                        text: "Design"
+                        on_release: self.parent.chosen_mode = 'design'
+                    ContextMenuTextItem:
+                        text: "Visualization"
+                        on_release: self.parent.chosen_mode = 'visualization'
+            AppMenuTextItem:
+                text: "DESIGN OPTIONS"
+                DesignMenu:
+                    ContextMenuTextItem:
+                        text: "interpolation (" + self.parent.interpolation + ")"
+                        ContextMenu:
+                            ContextMenuTextItem:
+                                text: "cubic"
+                                on_release: self.parent.parent.parent.interpolation = self.text;
+                            ContextMenuTextItem:
+                                text: "linear"
+                                on_release: self.parent.parent.parent.interpolation = self.text
+            AppMenuTextItem:
+                text: "VISUAL OPTIONS"
+                VisualizationMenu:
+                    ContextMenuTextItem:
+                        text: "domain (" + self.parent.domain + ")"
+                        ContextMenu:
+                            ContextMenuTextItem:
+                                text: "time"
+                                on_release: self.parent.parent.parent.domain = self.text
+                            ContextMenuTextItem:
+                                text: "frequency"
+                                on_release: self.parent.parent.parent.domain = self.text
+                    ContextMenuTextItem:
+                        text: "play"
+                        on_release: self.parent.play = True
+                    ContextMenuTextItem:
+                        text: "stop"
+                        on_release: self.parent.stop = True
