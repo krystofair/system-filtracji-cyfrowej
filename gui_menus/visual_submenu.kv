@@ -1,10 +1,16 @@
-AppMenuTextItem:
-    text: "Visual Options"
-    VisualizationMenu:
-        id: visualization_menu
-        ContextMenuTextItem:
-            text: "aha"
-            on_release: self.parent.aha()
-        ContextMenuTextItem:
-            text: "dobra"
-            on_release: self.parent.dobra()
+VisualizationMenu:
+    ContextMenuTextItem:
+        text: "domain (" + self.parent.domain + ")"
+        ContextMenu:
+            ContextMenuTextItem:
+                text: "time"
+                on_release: self.parent.parent.parent.domain = self.text
+            ContextMenuTextItem:
+                text: "frequency"
+                on_release: self.parent.parent.parent.domain = self.text
+    ContextMenuTextItem:
+        text: "play"
+        on_release: self.parent.play = True
+    ContextMenuTextItem:
+        text: "stop"
+        on_release: self.parent.stop = True

@@ -4,7 +4,7 @@ os.environ['KIVY_HOME'] = sys.path[0]
 
 from kivy_garden.graph import Graph
 import kivy.properties as kp
-from custom_plots import CubicPlot
+from custom_plots import CustomPlot
 from kivy.uix.bubble import Bubble, BubbleContent
 from kivy.uix.label import Label
 from kivy.core.window import Window
@@ -37,16 +37,16 @@ class DesignGraph(Graph):
     ylabel = kp.StringProperty('Amplitude (dB)')
     xlabel = kp.StringProperty('freq (Hz)')
     visual_mode = kp.BooleanProperty(False)
-    cubic_plot = kp.ObjectProperty(None)
+    custom_plot = kp.ObjectProperty(None)
     prev_touch = kp.ObjectProperty(None, allownone=True)
     prev_x = kp.NumericProperty(-1)
     cursor_pos_bubble = kp.ObjectProperty()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.cubic_plot = CubicPlot(self.xmin, self.xmax)
-        self.add_plot(self.cubic_plot)
-        self.add_plot(self.cubic_plot.get_inner_plot())
+        self.custom_plot = CustomPlot(self.xmin, self.xmax)
+        self.add_plot(self.custom_plot)
+        self.add_plot(self.custom_plot.get_inner_plot())
         Window.bind(mouse_pos=self.on_motion)
 
     def menu_was_clicked(self, x, y):
@@ -103,7 +103,7 @@ class DesignGraph(Graph):
             return False
         elif touch.button == 'right':
             x, y = self.to_widget(touch.x, touch.y, True)
-            self.cubic_plot.remove_point(self.to_data(x, y)[0])
+            self.custom_plot.remove_point(self.to_data(x, y)[0])
             self.prev_x = self.to_data(x, y)[0]
             touch.grab(self)
             return False
@@ -117,7 +117,7 @@ class DesignGraph(Graph):
             x, y = self.to_widget(touch.x, touch.y, True)
             if self.collide_plot(x, y):
                 x0, y0 = self.to_data(x, y)
-                self.cubic_plot.add_point(int(x0), y0)
+                self.custom_plot.add_point(int(x0), y0)
                 return True
         elif touch.button == 'right':
             if self.prev_x != -1:
@@ -126,7 +126,7 @@ class DesignGraph(Graph):
                 start = min(int(self.prev_x), int(x0))
                 stop = max(int(self.prev_x), int(x0))
                 for x in range(start, stop):
-                    self.cubic_plot.remove_point(x)
+                    self.custom_plot.remove_point(x)
             touch.ungrab(self)
             self.prev_x = -1
 
@@ -139,7 +139,7 @@ class DesignGraph(Graph):
             x, y = self.to_widget(touch.x, touch.y, True)
             if self.collide_plot(x, y):
                 x0, y0 = self.to_data(x,y)
-                self.cubic_plot.add_point(x0, y0)
+                self.custom_plot.add_point(x0, y0)
                 # return True
 
     def on_motion(self, instance, value):

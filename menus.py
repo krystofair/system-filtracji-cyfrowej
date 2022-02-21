@@ -1,3 +1,7 @@
+import os.path
+
+from kivy.lang import Builder
+from kivy.uix.floatlayout import FloatLayout
 from kivy_garden.contextmenu import AppMenu, ContextMenu,\
     AppMenuTextItem, ContextMenuTextItem, ContextMenuDivider
 
@@ -71,6 +75,23 @@ class VisualizationMenu(ContextMenu):
     play = kp.BooleanProperty(False)
     stop = kp.BooleanProperty(True)
 
+    @staticmethod
+    def load():
+        from kivy.app import App
+        app_instance = App.get_running_app()
+        try:
+            dynamic_menu_item = app_instance.main_wnd_view.ids['dynamic_menu']
+            if dynamic_menu_item.get_submenu() is not None:
+                dynamic_menu_item.parent.remove_widget(dynamic_menu_item.get_submenu())
+            dynamic_menu_item.text = "VISUAL OPTIONS"
+            path = os.path.dirname(os.path.realpath(__file__))
+            dm = Builder.load_file(os.path.join(path, 'gui_menus/visual_submenu.kv'))
+            dynamic_menu_item.add_widget(dm)
+            dm._on_visible(False)
+            app_instance.set_graph('visual')
+        except Exception as e:
+            print("An exception has occured ", e)
+
     def on_domain(self, instance, value):
         # domain = value if value == 'time' or value == 'frequency' else 'frequency'
         # if self.visual_graph is None:
@@ -99,15 +120,6 @@ class VisualizationMenu(ContextMenu):
             self.play = False
             hide_all(self)
 
-    @staticmethod
-    def load():
-        menu_item = AppMenuTextItem(text='VISUAL OPTIONS')
-        this = VisualizationMenu()
-        this.add_text_item('nie wiem', on_release=this.opcja1)
-        this.add_text_item('opcja2', on_release=this.opcja2)
-        menu_item.submenu = this
-        return menu_item
-
 
 class DesignMenu(ContextMenu):
     kind_of_filter = kp.StringProperty('fir')
@@ -117,12 +129,19 @@ class DesignMenu(ContextMenu):
 
     @staticmethod
     def load():
-        menu_item = AppMenuTextItem(text='DESIGN OPTIONS')
-        this = DesignMenu()
-        this.add_text_item('opcja1', on_release=this.opcja1)
-        this.add_text_item('opcja2', on_release=this.opcja2)
-        menu_item.submenu = this
-        return menu_item
+        from kivy.app import App
+        app_instance = App.get_running_app()
+        try:
+            dynamic_menu_item = app_instance.main_wnd_view.ids['dynamic_menu']
+            if dynamic_menu_item.get_submenu() is not None:
+                dynamic_menu_item.parent.remove_widget(dynamic_menu_item.get_submenu())
+            dynamic_menu_item.text = "DESIGN OPTIONS"
+            path = os.path.dirname(os.path.realpath(__file__))
+            dm = Builder.load_file(os.path.join(path, 'gui_menus/design_submenu.kv'))
+            dynamic_menu_item.add_widget(dm)
+            dm._on_visible(False)
+            app_instance.set_graph('design')
+        except Exception as e: print('exception', e)
 
     def on_interpolation(self, i, value):
         if value == 'cubic':
@@ -151,16 +170,22 @@ class ModeMenu(ContextMenu):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.options = { 'design': self.design_option_cb}
+        self.options = {
+            'design': self.load_design_option_menu,
+            'visualization': self.load_visual_option_menu
+        }
 
     def on_chosen_mode(self, inst, value):
         mainmenu = self.parent.parent
-        # self.options[value]()
+        self.options[value]()
         mainmenu.close_all()
         mainmenu._cancel_hover_timer()
 
-    def design_option_cb(self):
-        print('design mode')
+    def load_design_option_menu(self):
+        DesignMenu.load()
+
+    def load_visual_option_menu(self):
+        VisualizationMenu.load()
 
 
 class MainMenu(AppMenu):

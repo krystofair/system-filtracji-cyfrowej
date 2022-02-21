@@ -56,32 +56,5 @@ FloatLayout:
                         text: "Visualization"
                         on_release: self.parent.chosen_mode = 'visualization'
             AppMenuTextItem:
-                text: "DESIGN OPTIONS"
-                DesignMenu:
-                    ContextMenuTextItem:
-                        text: "interpolation (" + self.parent.interpolation + ")"
-                        ContextMenu:
-                            ContextMenuTextItem:
-                                text: "cubic"
-                                on_release: self.parent.parent.parent.interpolation = self.text;
-                            ContextMenuTextItem:
-                                text: "linear"
-                                on_release: self.parent.parent.parent.interpolation = self.text
-            AppMenuTextItem:
-                text: "VISUAL OPTIONS"
-                VisualizationMenu:
-                    ContextMenuTextItem:
-                        text: "domain (" + self.parent.domain + ")"
-                        ContextMenu:
-                            ContextMenuTextItem:
-                                text: "time"
-                                on_release: self.parent.parent.parent.domain = self.text
-                            ContextMenuTextItem:
-                                text: "frequency"
-                                on_release: self.parent.parent.parent.domain = self.text
-                    ContextMenuTextItem:
-                        text: "play"
-                        on_release: self.parent.play = True
-                    ContextMenuTextItem:
-                        text: "stop"
-                        on_release: self.parent.stop = True
+                text: ""
+                id: dynamic_menu

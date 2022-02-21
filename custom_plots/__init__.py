@@ -2,16 +2,16 @@ from kivy_garden.graph import LinePlot, ScatterPlot
 from kivy.properties import NumericProperty, ListProperty, DictProperty, ObjectProperty
 from scipy.interpolate import CubicSpline, interp1d
 from kivy.lang import Builder
+from profile import Profile
 
 
-class CubicPlot(LinePlot):
-    """ Czyli wykres, który z podanych punktów
+class CustomPlot(LinePlot, Profile):
+    """Czyli wykres, który z podanych punktów
     interpoluje wartości wielomianowe na pełnej dziedzinie.
     Z pierwszych dwóch punktów jest linia prosta. """
     line_width = NumericProperty(1)
     color = ListProperty([1, 0, 0, 1])
     color2 = ListProperty([1, 1, 1, 1])
-    s_points = DictProperty()
     point_size = NumericProperty(3)
     scatter_plot = ObjectProperty()
     interpolation_function = ObjectProperty(CubicSpline)
@@ -34,8 +34,7 @@ class CubicPlot(LinePlot):
         return self.scatter_plot
 
     def _interpolate_points(self):
-        tmp_points = list(self.s_points.items())
-        tmp_points.sort(key=lambda x: x[0])
+        tmp_points = self.get_points_as_list()
         if len(tmp_points) >= 2:
             xs, ys = zip(*tmp_points)
             interpolation = self.interpolation_function(xs, ys)
@@ -57,4 +56,4 @@ class CubicPlot(LinePlot):
         except: pass
 
 
-__all__ = ['CubicPlot']
+__all__ = ['CustomPlot']

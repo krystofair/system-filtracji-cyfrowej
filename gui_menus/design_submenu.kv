@@ -1,10 +1,10 @@
-AppMenuTextItem:
-    text: "Design Options"
-    DesignMenu:
-        id: design_menu
-        ContextMenuTextItem:
-            text: "CB1"
-            on_release: print('callback 1 from design dynamic menu')
-        ContextMenuTextItem:
-            text: "CB2"
-            on_release: print("Cb 2 from design d.m.")
+DesignMenu:
+    ContextMenuTextItem:
+        text: "interpolation (" + self.parent.interpolation + ")"
+        ContextMenu:
+            ContextMenuTextItem:
+                text: "cubic"
+                on_release: self.parent.parent.parent.interpolation = self.text;
+            ContextMenuTextItem:
+                text: "linear"
+                on_release: self.parent.parent.parent.interpolation = self.text
