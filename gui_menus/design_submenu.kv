@@ -1,10 +1,24 @@
+#:import DesignMenu menus.DesignMenu
 DesignMenu:
+    ContextMenuTextItem:
+        text: "Save Characteristic"
+        on_release: app.get_concrete_menu(DesignMenu).save_profile()
+    ContextMenuTextItem:
+        text: "Load Characteristic"
+        on_release: print('app.get_concrete_menu(DesignMenu).load_profile()')
+    ContextMenuTextItem:
+        text: "Reset profile"
+        on_release: DesignMenu.reset_design_graph()
     ContextMenuTextItem:
         text: "interpolation (" + self.parent.interpolation + ")"
         ContextMenu:
             ContextMenuTextItem:
                 text: "cubic"
-                on_release: self.parent.parent.parent.interpolation = self.text;
+                on_release: app.get_concrete_menu(DesignMenu).interpolation = self.text
             ContextMenuTextItem:
                 text: "linear"
-                on_release: self.parent.parent.parent.interpolation = self.text
+                on_release: app.get_concrete_menu(DesignMenu).interpolation = self.text
+    ContextMenuTextItem:
+        text: "Filter (" + self.parent.filter + ")"
+        ContextMenu:
+            id: filters_names_list

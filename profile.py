@@ -34,7 +34,7 @@ class Profile:
     def load_profile(self, path):
         """throws exception(ValueError, EOFError), when loading file failed"""
         # wczytywanie w ten sposób punktów pewnie nie jest najlepsze
-        # TODO: poprawić wczytywanie
+        # TODO: zoptymalizować wczytywanie
         in_file = open(path, 'rb')
         if in_file.read(3) != b'CHR':
             in_file.close()

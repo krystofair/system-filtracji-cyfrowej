@@ -1,12 +1,16 @@
 import os.path
+from functools import partial
 
+from kivy.app import App
 from kivy.lang import Builder
-from kivy.uix.floatlayout import FloatLayout
-from kivy_garden.contextmenu import AppMenu, ContextMenu,\
+from kivy_garden.contextmenu import AppMenu, ContextMenu, \
     AppMenuTextItem, ContextMenuTextItem, ContextMenuDivider
 
 import kivy.properties as kp
-from custom_graphs import VisualGraph
+#todo zaimportuj tutaj modal window kivy
+from custom_graphs import VisualGraph, DesignGraph
+from scipy.interpolate import CubicSpline, interp1d
+
 
 def hide_all(self):
     mainmenu = self.parent.parent
@@ -28,20 +32,15 @@ class FileMenu(ContextMenu):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.options = {
-            'open_audio_cb': self.open_audio_cb,
+            'load_audio_cb': self.load_audio_cb,
             'save_audio_cb': self.save_audio_cb,
-            'open_filter_cb': self.open_filter_cb,
+            'load_filter_cb': self.load_filter_cb,
             'save_filter_cb': self.save_filter_cb,
             'exit_option': self.exit_option
         }
 
-    @staticmethod
-    def load():
-        menu_item = AppMenuTextItem(text='FILE')
-        return menu_item
-
-    def open_audio_cb(self):
-        print('open_audio_cb release')
+    def load_audio_cb(self):
+        print('load_audio_cb release')
         # Dialog z wyborem pliku i załadowaniem scieżki,
         # nie trzeba od poczatku ladowac pliku.
         # mo.audio_path = '/path/to/audio'
@@ -49,8 +48,9 @@ class FileMenu(ContextMenu):
     def save_audio_cb(self):
         print('save_audio_cb release')
 
-    def open_filter_cb(self):
-        print('open_filter_cb release')
+    def load_filter_cb(self):
+
+        print('load_filter_cb release')
 
     def save_filter_cb(self):
         print('save_filter_cb release')
@@ -89,6 +89,7 @@ class VisualizationMenu(ContextMenu):
             dynamic_menu_item.add_widget(dm)
             dm._on_visible(False)
             app_instance.set_graph('visual')
+            return dm
         except Exception as e:
             print("An exception has occured ", e)
 
@@ -122,10 +123,19 @@ class VisualizationMenu(ContextMenu):
 
 
 class DesignMenu(ContextMenu):
-    kind_of_filter = kp.StringProperty('fir')
+    filter = kp.StringProperty()  # interfejs do wyboru filtru
     interpolation = kp.StringProperty('cubic')
-    filter_algorithm = kp.ObjectProperty(None)
     start = kp.BooleanProperty(False)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._filter = None
+
+    @staticmethod
+    def reset_design_graph():
+        app = App.get_running_app()
+        app.design_graph = DesignGraph()
+        app.set_graph('design')
 
     @staticmethod
     def load():
@@ -138,29 +148,50 @@ class DesignMenu(ContextMenu):
             dynamic_menu_item.text = "DESIGN OPTIONS"
             path = os.path.dirname(os.path.realpath(__file__))
             dm = Builder.load_file(os.path.join(path, 'gui_menus/design_submenu.kv'))
+            dm.load_filter_list()
             dynamic_menu_item.add_widget(dm)
             dm._on_visible(False)
             app_instance.set_graph('design')
-        except Exception as e: print('exception', e)
+            return dm
+        except Exception as e:
+            print('exception', e)
+
+    def load_filter_list(self):
+        filters_names_list = self.ids['filters_names_list']
+        app_instance = App.get_running_app()
+        filters_classes_list = app_instance.loaded_filters
+
+        def release_callback(this):
+            self.filter = this.text
+
+        for fc in filters_classes_list:
+            t = fc.filter_id+'#'+fc.filter_kind
+            cmti = ContextMenuTextItem(text=t)
+            cmti.on_release = partial(release_callback, cmti)
+            filters_names_list.add_widget(cmti)
 
     def on_interpolation(self, i, value):
+        app = App.get_running_app()
         if value == 'cubic':
-            print(value)
+            app.design_graph.custom_plot.interp_func = CubicSpline
         elif value == 'linear':
-            print(value)
+            app.design_graph.custom_plot.interp_func = interp1d
         else:
-            print('nie znana interpolacja')
+            raise Exception("Interpolation not known.")
         hide_all(i)
 
-    def on_kind_of_filter(self, i, v):
-        print('on-kind-of-filter')
-        hide_all(self)
-
-    def on_filter_algorithm(self, i, v):
-        print('on-filter-algorithm')
+    def on_filter(self, i, v):
+        app_instance = App.get_running_app()
+        filter_list = app_instance.loaded_filters
+        id = v[:v.index('#')]
+        for filter_item in filter_list:
+            if id == filter_item.filter_id:
+                self._filter = filter_item()  # creating instance of filter class
         hide_all(self)
 
     def on_start(self, i, v):
+        app = App.get_running_app()
+        app.design_graph.get_profile()
         print('on-start')
         hide_all(self)
 
@@ -183,11 +214,12 @@ class ModeMenu(ContextMenu):
 
     def load_design_option_menu(self):
         DesignMenu.load()
+        App.get_running_app().set_menus()
 
     def load_visual_option_menu(self):
         VisualizationMenu.load()
+        App.get_running_app().set_menus()
 
 
 class MainMenu(AppMenu):
     pass
-

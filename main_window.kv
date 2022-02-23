@@ -30,15 +30,15 @@ FloatLayout:
                 FileMenu:
                     ContextMenuDivider:
                     ContextMenuTextItem:
-                        text: "Open filter"
-                        on_release: self.parent.chosen_option = 'open_filter_cb'
+                        text: "Load filter"
+                        on_release: self.parent.chosen_option = 'load_filter_cb'
                     ContextMenuTextItem:
                         text: "Save filter"
                         on_release: self.parent.chosen_option = 'save_filter_cb'
                     ContextMenuDivider:
                     ContextMenuTextItem:
-                        text: "Open audio file"
-                        on_release: self.parent.chosen_option = 'open_audio_cb'
+                        text: "Load audio file"
+                        on_release: self.parent.chosen_option = 'load_audio_cb'
                     ContextMenuTextItem:
                         text: "Save audio file"
                         on_release: self.parent.chosen_option = 'save_audio_cb'
