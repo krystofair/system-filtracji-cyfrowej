@@ -22,3 +22,7 @@ DesignMenu:
         text: "Filter (" + self.parent.filter + ")"
         ContextMenu:
             id: filters_names_list
+    ContextMenuTextItem:
+        text: "Create filter"
+        color: [1,0,0,1]
+        on_release: app.get_concrete_menu(DesignMenu).create_filter_callback()

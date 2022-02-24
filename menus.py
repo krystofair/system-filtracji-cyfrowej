@@ -9,6 +9,7 @@ from kivy_garden.contextmenu import AppMenu, ContextMenu, \
 import kivy.properties as kp
 #todo zaimportuj tutaj modal window kivy
 from custom_graphs import VisualGraph, DesignGraph
+from kivy_garden.graph import MeshLinePlot
 from scipy.interpolate import CubicSpline, interp1d
 
 
@@ -113,7 +114,6 @@ class VisualizationMenu(ContextMenu):
 class DesignMenu(ContextMenu):
     filter = kp.StringProperty()
     interpolation = kp.StringProperty('cubic')
-    start = kp.BooleanProperty(False)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -174,12 +174,14 @@ class DesignMenu(ContextMenu):
         id = v[:v.index('#')]
         for filter_item in filter_list:
             if id == filter_item.filter_id:
-                self._filter = filter_item()  # creating instance of filter class
+                self._filter = filter_item()
 
-    def on_start(self, i, v):
+    def create_filter_callback(self):
         app = App.get_running_app()
-        app.design_graph.get_profile()
-        print('on-start')
+        if self._filter is not None:
+            self._filter.generate_filter(app.design_graph.custom_plot)
+            plot = MeshLinePlot(points=self._filter.impulse_response(), color=[0, 0, 1, 1])
+            app.design_graph.add_plot(plot)
 
 
 class ModeMenu(ContextMenu):

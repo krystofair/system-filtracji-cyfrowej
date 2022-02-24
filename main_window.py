@@ -1,6 +1,4 @@
 import os
-import sys
-os.environ['KIVY_HOME'] = sys.path[0]
 
 from menus import *
 from filters import FILTER_LIST
@@ -72,8 +70,6 @@ class MainWindow(App):
             self.graph = self.design_graph
 
     def build(self):
-        Config.set('input', 'mouse', 'mouse, disable_multitouch')
-        Config.write()
         # utworzenie obiektów opcji w klasie głównej programu
         # mm = Builder.load_file("main_menu.kv")
         self.main_wnd_view = Builder.load_file("main_window.kv")
@@ -88,4 +84,15 @@ class MainWindow(App):
 
 
 if __name__ == '__main__':
+    _path = os.path.dirname(os.path.realpath(__file__))
+    Config.read(os.path.join(_path, 'config.ini'))
+    # Config.set('kivy', 'exit_on_escape', 0)
+    # Config.set('kivy','log_maxfiles', 1)
+    # Config.set('input', 'mouse', 'mouse, disable_multitouch')
+    # Config.set('graphics', 'height', 764)
+    # Config.set('graphics', 'minimum_height', 600)
+    # Config.set('graphics', 'minimum_width', 800)
+    # Config.set('graphics', 'width', 1024)
+    # Config.set('graphics', 'maxfps', 30)
+    # Config.write()
     MainWindow().run()

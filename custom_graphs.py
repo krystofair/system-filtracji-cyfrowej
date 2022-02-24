@@ -1,10 +1,4 @@
-import os
-import sys
-
 from kivy.app import App
-
-os.environ['KIVY_HOME'] = sys.path[0]
-
 from kivy_garden.graph import Graph
 import kivy.properties as kp
 from custom_plot import CustomPlot
@@ -117,15 +111,6 @@ class DesignGraph(Graph):
                 x0, y0 = self.to_data(x,y)
                 self.custom_plot.add_point(x0, y0)
                 # return True
-
-    # def on_motion(self, instance, value):
-    #     x, y = self.to_widget(*value)
-    #     pos = self.to_data(x, y)
-    #     try: App.get_running_app().cursor_bubble.data_pos = pos
-    #     except: pass
-    #     # self.cursor_pos_bubble.update_bubble(pos)
-    #     # self.cursor_pos_bubble = CursorDataPosBubble(pos)
-    #     # self.add_widget(self.cursor_pos_bubble)
 
 
 class VisualGraph(Graph):
