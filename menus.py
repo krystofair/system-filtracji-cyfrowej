@@ -12,15 +12,6 @@ from custom_graphs import VisualGraph, DesignGraph
 from scipy.interpolate import CubicSpline, interp1d
 
 
-def hide_all(self):
-    mainmenu = self.parent.parent
-    if not issubclass(mainmenu.__class__, MainMenu):
-        mainmenu = [x for x in mainmenu.walk_reverse() if issubclass(x.__class__, MainMenu)][0]
-        print(mainmenu)
-    mainmenu.close_all()
-    mainmenu._cancel_hover_timer()
-
-
 class FileMenu(ContextMenu):
     app_mode = kp.StringProperty('design')
     audio_path = kp.StringProperty('')
@@ -49,8 +40,8 @@ class FileMenu(ContextMenu):
         print('save_audio_cb release')
 
     def load_filter_cb(self):
-
         print('load_filter_cb release')
+        # print(self.)
 
     def save_filter_cb(self):
         print('save_filter_cb release')
@@ -62,7 +53,6 @@ class FileMenu(ContextMenu):
         if value == '':
             return
         self.options[self.chosen_option]()
-        hide_all(self)
         self.chosen_option = ''
 
 
@@ -101,7 +91,7 @@ class VisualizationMenu(ContextMenu):
         #     self.visual_graph.xlog = True
         # elif domain == 'time':
         #     self.visual_graph.xlog = False
-        hide_all(self)
+        pass
 
     def get_sample(self):
         for sample in self.tovisual_samples:
@@ -112,18 +102,16 @@ class VisualizationMenu(ContextMenu):
             self.stop = False
             print('start clock interval, some thread?')
             # start clock interval.
-            hide_all(self)
 
     def on_stop(self, inst, value):
         if value:
             # stop interval
             print('stop interval')
             self.play = False
-            hide_all(self)
 
 
 class DesignMenu(ContextMenu):
-    filter = kp.StringProperty()  # interfejs do wyboru filtru
+    filter = kp.StringProperty()
     interpolation = kp.StringProperty('cubic')
     start = kp.BooleanProperty(False)
 
@@ -170,7 +158,8 @@ class DesignMenu(ContextMenu):
             cmti.on_release = partial(release_callback, cmti)
             filters_names_list.add_widget(cmti)
 
-    def on_interpolation(self, i, value):
+    @staticmethod
+    def on_interpolation(i, value):
         app = App.get_running_app()
         if value == 'cubic':
             app.design_graph.custom_plot.interp_func = CubicSpline
@@ -178,7 +167,6 @@ class DesignMenu(ContextMenu):
             app.design_graph.custom_plot.interp_func = interp1d
         else:
             raise Exception("Interpolation not known.")
-        hide_all(i)
 
     def on_filter(self, i, v):
         app_instance = App.get_running_app()
@@ -187,13 +175,11 @@ class DesignMenu(ContextMenu):
         for filter_item in filter_list:
             if id == filter_item.filter_id:
                 self._filter = filter_item()  # creating instance of filter class
-        hide_all(self)
 
     def on_start(self, i, v):
         app = App.get_running_app()
         app.design_graph.get_profile()
         print('on-start')
-        hide_all(self)
 
 
 class ModeMenu(ContextMenu):
@@ -222,4 +208,11 @@ class ModeMenu(ContextMenu):
 
 
 class MainMenu(AppMenu):
-    pass
+    def collide_point(self, x, y):
+        for item in self.walk():
+            try:
+                submenu = item.get_submenu()
+                if submenu.visible and submenu.self_or_submenu_collide_with_point(x, y):
+                    return True
+            except: pass
+        return super().collide_point(x, y)

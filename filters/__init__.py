@@ -7,14 +7,6 @@ class IFilter:
     filter_id = None
     filter_kind = ''
 
-    @classmethod
-    def get_name(cls):
-        return cls.filter_id
-
-    @classmethod
-    def get_kind(cls):
-        return cls.filter_kind
-
     def generate_filter(self, profile):
         raise NotImplementedError
 

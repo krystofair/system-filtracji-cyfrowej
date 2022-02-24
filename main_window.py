@@ -1,15 +1,10 @@
-""" Okno głowne programu,
-składa sie z innych konkretnych okien ktorych wizualizacja jest stworzona
-w innych plikach pythona.
-"""
-
 import os
 import sys
-
 os.environ['KIVY_HOME'] = sys.path[0]
 
 from menus import *
 from filters import FILTER_LIST
+from cursor_bubble import CursorPosBubble
 
 import kivy
 from kivy.app import App
@@ -28,7 +23,6 @@ class AppMenuALayout(AnchorLayout):
 class MainLayout(FloatLayout):
     pass
 
-
 class MainWindow(App):
     design_graph = kp.ObjectProperty(DesignGraph())
     graph = kp.ObjectProperty()
@@ -36,6 +30,7 @@ class MainWindow(App):
     menus = kp.ListProperty([])
     main_wnd_view = kp.ObjectProperty()
     loaded_filters = kp.ListProperty()
+    cursor_bubble = kp.ObjectProperty(CursorPosBubble())
 
     def load_known_filters(self):
         for fclass in FILTER_LIST:
@@ -54,6 +49,7 @@ class MainWindow(App):
             grid.remove_widget(grid.children[0])
         except: pass
         grid.add_widget(self.graph)
+        self.cursor_bubble.graph = self.graph
 
     def set_menus(self):
         """set list of menus accessible in program"""
@@ -87,6 +83,7 @@ class MainWindow(App):
         DesignMenu.load()
         self.set_menus()
         # main_wnd_view.add_widget(mm)
+        self.main_wnd_view.add_widget(self.cursor_bubble)
         return self.main_wnd_view
 
 

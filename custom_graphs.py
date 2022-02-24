@@ -1,25 +1,14 @@
 import os
 import sys
+
+from kivy.app import App
+
 os.environ['KIVY_HOME'] = sys.path[0]
 
 from kivy_garden.graph import Graph
 import kivy.properties as kp
 from custom_plots import CustomPlot
-from kivy.uix.bubble import Bubble, BubbleContent
-from kivy.uix.label import Label
 from kivy.core.window import Window
-
-
-class CursorDataPosBubble(Bubble):
-    def __init__(self, pos, **kwargs):
-        super().__init__(**kwargs)
-        # values = ('left_top', 'left_mid', 'left_bottom', 'top_left',
-        #           'top_mid', 'top_right', 'right_top', 'right_mid',
-        #           'right_bottom', 'bottom_left', 'bottom_mid', 'bottom_right')
-        # index = values.index(self.arrow_pos)
-        # self.arrow_pos = values[(index + 1) % len(values)]
-        pos = (round(pos[0], ndigits=2), round(pos[1], ndigits=2))
-        self.add_widget(Label(text=f"{pos[0]}x{pos[1]}"))
 
 
 class DesignGraph(Graph):
@@ -36,29 +25,16 @@ class DesignGraph(Graph):
     y_grid_label = kp.BooleanProperty(True)
     ylabel = kp.StringProperty('Amplitude (dB)')
     xlabel = kp.StringProperty('freq (Hz)')
-    visual_mode = kp.BooleanProperty(False)
     custom_plot = kp.ObjectProperty(None)
     prev_touch = kp.ObjectProperty(None, allownone=True)
     prev_x = kp.NumericProperty(-1)
-    cursor_pos_bubble = kp.ObjectProperty()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.custom_plot = CustomPlot(self.xmin, self.xmax)
         self.add_plot(self.custom_plot)
         self.add_plot(self.custom_plot.get_inner_plot())
-        Window.bind(mouse_pos=self.on_motion)
-
-    def menu_was_clicked(self, x, y):
-        from menus import MainMenu
-        mainmenu = [m for m in self.walk() if issubclass(m.__class__, MainMenu)][0]
-        for item in mainmenu.walk():
-            try:
-                submenu = item.get_submenu()
-                if submenu.self_or_submenu_collide_with_point(x, y) is not None:
-                    return True
-            except: pass
-        return False
+        # Window.bind(mouse_pos=self.on_motion)
 
     # pseudo działające zoomy
     def _zoom_in(self):
@@ -76,7 +52,7 @@ class DesignGraph(Graph):
             self.ymax += 3
 
     def on_touch_down(self, touch):
-        if self.menu_was_clicked(*self.to_widget(touch.x, touch.y, True)):
+        if App.get_running_app().menus[0].collide_point(*self.to_widget(touch.x, touch.y, True)):
             return True
         if touch.is_mouse_scrolling:
             if touch.button == 'scrolldown':
@@ -110,7 +86,7 @@ class DesignGraph(Graph):
         return super().on_touch_down(touch)
 
     def on_touch_up(self, touch):
-        if self.menu_was_clicked(*self.to_widget(touch.x, touch.y, True)):
+        if App.get_running_app().menus[0].collide_point(*self.to_widget(touch.x, touch.y, True)):
             return True
         if touch.button == 'left':
             touch.ungrab(self)
@@ -133,23 +109,37 @@ class DesignGraph(Graph):
         return super().on_touch_up(touch)
 
     def on_touch_move(self, touch):
-        if touch.button == 'middle' and touch.grab_current is self and not self.visual_mode:
+        if touch.button == 'middle' and touch.grab_current is self:
             return True
-        if touch.button == 'left' and touch.grab_current is self and not self.visual_mode:
+        if touch.button == 'left' and touch.grab_current is self:
             x, y = self.to_widget(touch.x, touch.y, True)
             if self.collide_plot(x, y):
                 x0, y0 = self.to_data(x,y)
                 self.custom_plot.add_point(x0, y0)
                 # return True
 
-    def on_motion(self, instance, value):
-        if self.cursor_pos_bubble is not None:
-            self.remove_widget(self.cursor_pos_bubble)
-        x, y = self.to_widget(*value)
-        pos = self.to_data(x, y)
-        self.cursor_pos_bubble = CursorDataPosBubble(pos)
-        self.add_widget(self.cursor_pos_bubble)
-        pass
+    # def on_motion(self, instance, value):
+    #     x, y = self.to_widget(*value)
+    #     pos = self.to_data(x, y)
+    #     try: App.get_running_app().cursor_bubble.data_pos = pos
+    #     except: pass
+    #     # self.cursor_pos_bubble.update_bubble(pos)
+    #     # self.cursor_pos_bubble = CursorDataPosBubble(pos)
+    #     # self.add_widget(self.cursor_pos_bubble)
+
 
 class VisualGraph(Graph):
-    pass
+    xmax = kp.NumericProperty(20000)
+    xmin = kp.NumericProperty(20)
+    ymax = kp.NumericProperty(10)
+    ymin = kp.NumericProperty(-10)
+    ylabel = kp.StringProperty('Amplitude (dB)')
+    xlabel = kp.StringProperty('freq (Hz)')
+    xlog=kp.BooleanProperty(False)
+    x_grid = kp.BooleanProperty(True)
+    x_grid_label = kp.BooleanProperty(True)
+    y_grid = kp.BooleanProperty(True)
+    y_grid_label = kp.BooleanProperty(True)
+    y_ticks_major = kp.NumericProperty(2)
+    x_ticks_major = kp.NumericProperty(500)
+    # precision = kp.NumericProperty(2)
