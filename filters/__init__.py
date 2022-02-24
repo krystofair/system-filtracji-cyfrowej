@@ -16,6 +16,12 @@ class IFilter:
     def save_filter(self, path):
         raise NotImplementedError
 
+    def impulse_response(self):
+        raise NotImplementedError
+
+    def phase_response(self):
+        raise NotImplementedError
+
 
 # In this place are imports of created filters,
 # because every filter should use above interface.

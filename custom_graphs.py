@@ -7,7 +7,7 @@ os.environ['KIVY_HOME'] = sys.path[0]
 
 from kivy_garden.graph import Graph
 import kivy.properties as kp
-from custom_plots import CustomPlot
+from custom_plot import CustomPlot
 from kivy.core.window import Window
 
 
