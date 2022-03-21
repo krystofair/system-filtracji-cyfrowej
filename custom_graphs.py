@@ -108,7 +108,7 @@ class DesignGraph(Graph):
         if touch.button == 'left' and touch.grab_current is self:
             x, y = self.to_widget(touch.x, touch.y, True)
             if self.collide_plot(x, y):
-                x0, y0 = self.to_data(x,y)
+                x0, y0 = self.to_data(x, y)
                 self.custom_plot.add_point(x0, y0)
                 # return True
 

@@ -182,6 +182,7 @@ class DesignMenu(ContextMenu):
         if self._filter is not None:
             self._filter.generate_filter(app.design_graph.custom_plot)
             plot = MeshLinePlot(points=self._filter.impulse_response(), color=[0, 0, 1, 1])
+            # TODO: Zgłębić temat tej klasy wykresu i poprawić przeliczanie punktów zgodnie z tym
             app.design_graph.add_plot(plot)
 
 

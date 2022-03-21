@@ -13,7 +13,6 @@ class TestFilterFIR(IFilter):
 
     def __init__(self):
         self._coeffs = None
-        self._ir = None
 
     def generate_filter(self, profile):
         points = profile.get_points_as_list()
@@ -22,16 +21,15 @@ class TestFilterFIR(IFilter):
         cs = CubicSpline(x, y)
         x = np.arange(min(cs.x), max(cs.x))
         y = list(map(lambda v: np.power(10, v), cs(x)))
-        self._coeffs = firls(73, x, y, fs=44100)
+        self._coeffs = firls(999, x, y, fs=44100)
 
     def impulse_response(self):
-        if self._ir is not None:
-            return self._ir
+        if self._coeffs is None:
+            return []
         freq, response = freqz(self._coeffs)
-        points = zip(22000*freq/np.pi, np.log10(response)/10)
-        points = filter(lambda x: x[0] >= 18, points)
-        self._ir = points
-        return self._ir
+        ir_points = zip(freq, np.log10(response))
+        # ir_points = filter(lambda x: x[0] >= 18, ir_points)
+        return ir_points
 
     def load_filter(self, bin_file):
         pass
