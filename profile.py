@@ -1,6 +1,6 @@
 from platform import architecture as arch
 from functools import reduce
-from kivy.properties import DictProperty
+from kivy.properties import DictProperty, ObjectProperty
 
 
 class NotLoadedProfileException(Exception):
@@ -10,6 +10,7 @@ class NotLoadedProfileException(Exception):
 
 class Profile:
     s_points = DictProperty()
+    interp_func = ObjectProperty()  # Method of interpolation of points
 
     def __init__(self):
         self.byte_len = 4 if arch()[0] == "32bit" else 8

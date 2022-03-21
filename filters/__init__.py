@@ -22,6 +22,12 @@ class IFilter:
     def phase_response(self):
         raise NotImplementedError
 
+    def description(self):
+        # Filter description in order to user can find out the internals,
+        # what is interpolation of points in that filter, so user can
+        # choose right method of interpolation profile.
+        raise NotImplementedError
+
 
 # In this place are imports of created filters,
 # because every filter should use above interface.

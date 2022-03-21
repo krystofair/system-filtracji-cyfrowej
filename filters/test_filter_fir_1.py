@@ -18,6 +18,7 @@ class TestFilterFIR(IFilter):
     def generate_filter(self, profile):
         points = profile.get_points_as_list()
         x, y = zip(*points)
+        # XXX Can use interpolation method from profile
         cs = CubicSpline(x, y)
         x = np.arange(min(cs.x), max(cs.x))
         y = list(map(lambda v: np.power(10, v), cs(x)))

@@ -145,6 +145,7 @@ class DesignMenu(ContextMenu):
             print('exception', e)
 
     def load_filter_list(self):
+        """ Loading list of accessible filters """
         filters_names_list = self.ids['filters_names_list']
         app_instance = App.get_running_app()
         filters_classes_list = app_instance.loaded_filters
