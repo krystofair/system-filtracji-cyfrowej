@@ -8,7 +8,7 @@ DesignMenu:
         on_release: print('app.get_concrete_menu(DesignMenu).load_profile()')
     ContextMenuTextItem:
         text: "Reset profile"
-        on_release: DesignMenu.reset_design_graph()
+        on_release: DesignMenu.reset_design_graph(self.parent)
     ContextMenuTextItem:
         text: "interpolation (" + self.parent.interpolation + ")"
         ContextMenu:

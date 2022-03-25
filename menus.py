@@ -118,10 +118,10 @@ class DesignMenu(ContextMenu):
         super().__init__(**kwargs)
         self._filter = None
 
-    @staticmethod
-    def reset_design_graph():
+    def reset_design_graph(self):
         app = App.get_running_app()
         app.design_graph = DesignGraph()
+        self.on_interpolation(self, self.interpolation)
         app.set_graph('design')
 
     @staticmethod
@@ -180,7 +180,7 @@ class DesignMenu(ContextMenu):
         app = App.get_running_app()
         if self._filter is not None:
             self._filter.generate_filter(app.design_graph.design_plot)
-            plot = custom_plot.FilterPlot(points=self._filter.frequency_response(), color=[0, 0, 1, 1])
+            plot = custom_plots.FilterPlot(points=self._filter.frequency_response(), color=[0, 0, 1, 1])
             #TODO: dodać jakiś interfejs do konwersji wartości z graphu do filtru
             # bo mogą wystąpić błędy bez zabezpieczenia tego.
             app.design_graph.add_plot(plot)

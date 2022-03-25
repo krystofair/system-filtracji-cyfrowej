@@ -33,7 +33,6 @@ class MainWindow(App):
     def load_known_filters(self):
         for fclass in FILTER_LIST:
             self.loaded_filters.append(fclass)
-            print(fclass)
 
     def get_concrete_menu(self, menu_class):
         for menu in self.menus:
