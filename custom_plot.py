@@ -1,3 +1,4 @@
+import numpy as np
 from kivy_garden.graph import LinePlot, ScatterPlot
 from kivy.properties import NumericProperty, ListProperty, ObjectProperty
 from scipy.interpolate import CubicSpline
@@ -5,10 +6,12 @@ from kivy.lang import Builder
 from profile import Profile
 
 
+# todo zmienić zoomy na podstawowe dla osi X, a z ctrl dla osi Y
 class CustomPlot(LinePlot, Profile):
-    """Czyli wykres, który z podanych punktów
-    interpoluje wartości wielomianowe na pełnej dziedzinie.
-    Z pierwszych dwóch punktów jest linia prosta. """
+    """
+    Plot shows a line from the set of points, which are according to `interp_func` interpolated
+    at full domain. From first two points there is a straight line.
+    """
     line_width = NumericProperty(1)
     color = ListProperty([1, 0, 0, 1])
     color2 = ListProperty([1, 1, 1, 1])
@@ -36,8 +39,8 @@ class CustomPlot(LinePlot, Profile):
         if len(tmp_points) >= 2:
             xs, ys = zip(*tmp_points)
             interpolation = self.interp_func(xs, ys)
-            xmin, xmax = xs[0], xs[len(xs) - 1]
-            self.points = zip(range(xmin, xmax), interpolation(range(xmin, xmax)))
+            rx = range(xs[0], xs[len(xs) - 1])
+            self.points = zip(rx, interpolation(rx))
         return tmp_points
         # del xmin, xmax, xs, ys, tmp_points
 
@@ -50,8 +53,15 @@ class CustomPlot(LinePlot, Profile):
         self.s_points.update({int(x): round(y, ndigits=2)})
 
     def remove_point(self, x, /):
-        try: self.s_points.pop(int(x))
-        except: pass
+        try:
+            self.s_points.pop(int(x))
+        except:
+            pass  # pass cause this is very often and not important.
 
 
-__all__ = ['CustomPlot']
+class FilterPlot(LinePlot):
+    def funcx(self):
+        return lambda x: x
+
+
+__all__ = ['CustomPlot', 'FilterPlot']

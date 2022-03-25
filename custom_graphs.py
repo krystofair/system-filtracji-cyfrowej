@@ -2,12 +2,11 @@ from kivy.app import App
 from kivy_garden.graph import Graph
 import kivy.properties as kp
 from custom_plot import CustomPlot
-from kivy.core.window import Window
 
 
 class DesignGraph(Graph):
-    xmax = kp.NumericProperty(22000)
-    xmin = kp.NumericProperty(18)
+    xmax = kp.NumericProperty(20000)
+    xmin = kp.NumericProperty(20)
     ymax = kp.NumericProperty(20)
     ymin = kp.NumericProperty(-20)
     xlog = kp.BooleanProperty(True)

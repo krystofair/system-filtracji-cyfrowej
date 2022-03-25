@@ -9,8 +9,9 @@ class NotLoadedProfileException(Exception):
 
 
 class Profile:
-    s_points = DictProperty()
-    interp_func = ObjectProperty()  # Method of interpolation of points
+    """Interface for guide what properties will be passed in 100% to filter during generation."""
+    s_points = DictProperty()  # points on chart which are updating during modifying line.
+    interp_func = ObjectProperty()  # Method of interpolation of s_points
 
     def __init__(self):
         self.byte_len = 4 if arch()[0] == "32bit" else 8
@@ -34,13 +35,13 @@ class Profile:
 
     def load_profile(self, path):
         """throws exception(ValueError, EOFError), when loading file failed"""
-        # wczytywanie w ten sposób punktów pewnie nie jest najlepsze
-        # TODO: zoptymalizować wczytywanie
+        # TODO: zoptymalizować wczytywanie, bo może nie być wydajne
         in_file = open(path, 'rb')
         if in_file.read(3) != b'CHR':
             in_file.close()
             raise ValueError("That is not file of profile.")
         try:
+            #TODO: To be certain that loading is in little endian.
             self.byte_len = int(in_file.read(1), 10)
             if self.byte_len != 4 and self.byte_len != 8:
                 raise ValueError("Byte's length was wrong number.")
@@ -54,5 +55,6 @@ class Profile:
         except Exception as e:
             print(e)
             raise e
-        in_file.close()
+        finally:
+            in_file.close()
         self.loaded = True

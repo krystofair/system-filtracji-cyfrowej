@@ -1,10 +1,7 @@
-from kivy.app import App
-
 from . import IFilter
 from scipy.interpolate import CubicSpline
 from scipy.signal import firls, freqz
 import numpy as np
-from kivy_garden.graph import MeshLinePlot
 
 
 class TestFilterFIR(IFilter):
@@ -16,19 +13,28 @@ class TestFilterFIR(IFilter):
 
     def generate_filter(self, profile):
         points = profile.get_points_as_list()
-        x, y = zip(*points)
+        if len(points) < 2:
+            return
+        freqs, amplitudes = zip(*points)
         # XXX Can use interpolation method from profile
-        cs = CubicSpline(x, y)
-        x = np.arange(min(cs.x), max(cs.x))
-        y = list(map(lambda v: np.power(10, v), cs(x)))
-        self._coeffs = firls(999, x, y, fs=44100)
+        try:
+            interpolation = profile.interp_func(freqs, amplitudes)
+        except:
+            interpolation = CubicSpline(freqs, amplitudes)
+        bands = list(range(freqs[0], freqs[len(freqs)-1]))
+        bands.append(bands[len(bands)-1]) if not len(bands) % 2 == 0 else None
+        # TODO: change the way of grouping band to pythonist way.
+        b = []
+        for i in range(int(len(bands)/2)):
+            b.append([bands[i], bands[i+1]])
+        desired = np.power(10, interpolation(bands)/20)
+        self._coeffs = firls(99, b, desired, fs=44100)
 
-    def impulse_response(self):
+    def frequency_response(self):
         if self._coeffs is None:
             return []
-        freq, response = freqz(self._coeffs)
-        ir_points = zip(freq, np.log10(response))
-        # ir_points = filter(lambda x: x[0] >= 18, ir_points)
+        freq, response = freqz(self._coeffs, fs=44100)
+        ir_points = zip(freq, np.abs(response))
         return ir_points
 
     def load_filter(self, bin_file):

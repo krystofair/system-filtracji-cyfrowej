@@ -1,15 +1,14 @@
 import os.path
 from functools import partial
 
+import custom_plot
 from kivy.app import App
 from kivy.lang import Builder
-from kivy_garden.contextmenu import AppMenu, ContextMenu, \
-    AppMenuTextItem, ContextMenuTextItem, ContextMenuDivider
+from kivy_garden.contextmenu import AppMenu, ContextMenu, ContextMenuTextItem
 
 import kivy.properties as kp
 #todo zaimportuj tutaj modal window kivy
 from custom_graphs import VisualGraph, DesignGraph
-from kivy_garden.graph import MeshLinePlot
 from scipy.interpolate import CubicSpline, interp1d
 
 
@@ -181,8 +180,9 @@ class DesignMenu(ContextMenu):
         app = App.get_running_app()
         if self._filter is not None:
             self._filter.generate_filter(app.design_graph.custom_plot)
-            plot = MeshLinePlot(points=self._filter.impulse_response(), color=[0, 0, 1, 1])
-            # TODO: Zgłębić temat tej klasy wykresu i poprawić przeliczanie punktów zgodnie z tym
+            plot = custom_plot.FilterPlot(points=self._filter.frequency_response(), color=[0, 0, 1, 1])
+            #TODO: dodać jakiś interfejs do konwersji wartości z graphu do filtru
+            # bo mogą wystąpić błędy bez zabezpieczenia tego.
             app.design_graph.add_plot(plot)
 
 
