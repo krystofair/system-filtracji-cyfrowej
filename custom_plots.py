@@ -7,7 +7,7 @@ from profile import Profile
 
 
 # todo zmienić zoomy na podstawowe dla osi X, a z ctrl dla osi Y
-class CustomPlot(LinePlot, Profile):
+class DesignPlot(LinePlot, Profile):
     """
     Plot shows a line from the set of points, which are according to `interp_func` interpolated
     at full domain. From first two points there is a straight line.
@@ -64,4 +64,4 @@ class FilterPlot(LinePlot):
         return lambda x: x
 
 
-__all__ = ['CustomPlot', 'FilterPlot']
+__all__ = ['DesignPlot', 'FilterPlot']

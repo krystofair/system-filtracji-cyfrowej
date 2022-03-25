@@ -1,7 +1,7 @@
 import os.path
 from functools import partial
 
-import custom_plot
+import custom_plots
 from kivy.app import App
 from kivy.lang import Builder
 from kivy_garden.contextmenu import AppMenu, ContextMenu, ContextMenuTextItem
@@ -162,9 +162,9 @@ class DesignMenu(ContextMenu):
     def on_interpolation(i, value):
         app = App.get_running_app()
         if value == 'cubic':
-            app.design_graph.custom_plot.interp_func = CubicSpline
+            app.design_graph.design_plot.interp_func = CubicSpline
         elif value == 'linear':
-            app.design_graph.custom_plot.interp_func = interp1d
+            app.design_graph.design_plot.interp_func = interp1d
         else:
             raise Exception("Interpolation not known.")
 
@@ -179,7 +179,7 @@ class DesignMenu(ContextMenu):
     def create_filter_callback(self):
         app = App.get_running_app()
         if self._filter is not None:
-            self._filter.generate_filter(app.design_graph.custom_plot)
+            self._filter.generate_filter(app.design_graph.design_plot)
             plot = custom_plot.FilterPlot(points=self._filter.frequency_response(), color=[0, 0, 1, 1])
             #TODO: dodać jakiś interfejs do konwersji wartości z graphu do filtru
             # bo mogą wystąpić błędy bez zabezpieczenia tego.
