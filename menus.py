@@ -9,6 +9,7 @@ from kivy_garden.contextmenu import AppMenu, ContextMenu, ContextMenuTextItem
 import kivy.properties as kp
 #todo zaimportuj tutaj modal window kivy
 from custom_graphs import VisualGraph, DesignGraph
+from kivy_garden.graph import LinePlot
 from scipy.interpolate import CubicSpline, interp1d
 
 
@@ -180,7 +181,7 @@ class DesignMenu(ContextMenu):
         app = App.get_running_app()
         if self._filter is not None:
             self._filter.generate_filter(app.design_graph.design_plot)
-            plot = custom_plots.FilterPlot(points=self._filter.frequency_response(), color=[0, 0, 1, 1])
+            plot = LinePlot(points=self._filter.frequency_response(), color=[0, 0, 1, 1])
             #TODO: dodać jakiś interfejs do konwersji wartości z graphu do filtru
             # bo mogą wystąpić błędy bez zabezpieczenia tego.
             app.design_graph.add_plot(plot)

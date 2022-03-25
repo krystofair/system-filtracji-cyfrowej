@@ -59,9 +59,6 @@ class DesignPlot(LinePlot, Profile):
             pass  # pass cause this is very often and not important.
 
 
-class FilterPlot(LinePlot):
-    def funcx(self):
-        return lambda x: x
 
 
-__all__ = ['DesignPlot', 'FilterPlot']
+__all__ = ['DesignPlot']
