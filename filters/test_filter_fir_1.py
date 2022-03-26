@@ -25,13 +25,18 @@ class TestFilterFIR(IFilter):
         bands = list(range(freqs[0], freqs[len(freqs) - 1]))
         bands.append(bands[len(bands) - 1]) if not len(bands) % 2 == 0 else None
         desired = np.power(10, interpolation(bands) / 20)
-        self._coeffs = firls(99, bands, desired, fs=44100)
+        try:
+            self._coeffs = firls(99, bands, desired, fs=44100)
+        except Exception as e:
+            # todo pop up for communicate user
+            print(e)
+            self._coeffs = None
 
     def frequency_response(self):
         if self._coeffs is None:
             return []
         freq, response = freqz(self._coeffs, fs=44100)
-        ir_points = list(zip(freq + 20, np.abs(response)))
+        ir_points = list(zip(freq + 20, 20 * np.log(np.abs(response))))
         return ir_points
 
     def load_filter(self, bin_file):
@@ -45,8 +50,8 @@ class TestFilterFIR(IFilter):
 
     def description(self):
         return """This is test FIR filter. The filter approximate characteristic by
-        Least-square method. You should add even number of points on graph, because
-        that method take the points by pair."""
+Least-square method. You should add even number of points on graph, because
+that method take the points by pair."""
 
     def menu(self):
         return ContextMenu()

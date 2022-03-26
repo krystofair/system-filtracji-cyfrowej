@@ -21,10 +21,10 @@ class AppMenuALayout(AnchorLayout):
 class MainLayout(FloatLayout):
     pass
 
+
 class MainWindow(App):
     design_graph = kp.ObjectProperty(DesignGraph())
     graph = kp.ObjectProperty()
-    main_menu = kp.ObjectProperty()
     menus = kp.ListProperty([])
     main_wnd_view = kp.ObjectProperty()
     loaded_filters = kp.ListProperty()
@@ -50,6 +50,7 @@ class MainWindow(App):
 
     def set_menus(self):
         """set list of menus accessible in program"""
+        self.menus.clear()
         mainmenu = [w for w in self.main_wnd_view.walk() if issubclass(w.__class__, MainMenu)][0]
         for item in mainmenu.walk():
             try:

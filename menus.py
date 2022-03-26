@@ -2,15 +2,16 @@ import os.path
 from functools import partial
 
 import custom_plots
+import kivy.properties as kp
+# todo zaimportuj tutaj popup kivy
+from custom_graphs import DesignGraph, VisualGraph
 from kivy.app import App
 from kivy.lang import Builder
-from kivy_garden.contextmenu import AppMenu, ContextMenu, ContextMenuTextItem
-
-import kivy.properties as kp
-#todo zaimportuj tutaj modal window kivy
-from custom_graphs import VisualGraph, DesignGraph
-from kivy_garden.graph import LinePlot
+from kivy.uix.label import Label
+from kivy_garden.contextmenu import AppMenu, ContextMenu, ContextMenuTextItem, AppMenuTextItem
 from scipy.interpolate import CubicSpline, interp1d
+
+from kivy.uix.popup import Popup
 
 
 class FileMenu(ContextMenu):
@@ -126,6 +127,13 @@ class DesignMenu(ContextMenu):
         app.set_graph('design')
 
     @staticmethod
+    def reset_filter_plot():
+        app = App.get_running_app()
+        for plot in app.design_graph.plots[:]:
+            if isinstance(plot, custom_plots.FilterPlot):
+                app.design_graph.remove_plot(plot)
+
+    @staticmethod
     def load():
         from kivy.app import App
         app_instance = App.get_running_app()
@@ -170,18 +178,44 @@ class DesignMenu(ContextMenu):
             raise Exception("Interpolation not known.")
 
     def on_filter(self, i, v):
+        """Method is called when someone choose filter from the list.
+        Here, the filter instance is created and stored in internal state of
+        class `DesignMenu` instance."""
         app_instance = App.get_running_app()
         filter_list = app_instance.loaded_filters
         id = v[:v.index('#')]
         for filter_item in filter_list:
             if id == filter_item.filter_id:
                 self._filter = filter_item()
+        # deleting old "filter options" menu
+        last_added_menu = app_instance.menus.pop()
+        if isinstance(last_added_menu, AppMenuTextItem):
+            if last_added_menu.text != 'FILTER OPTIONS':
+                app_instance.menus.append(last_added_menu)
+            else:
+                app_instance.main_menu.remove_widget(last_added_menu)
+        # creating new "filter options" menu
+        filter_context_menu = self._filter.menu()
+        menu_item = AppMenuTextItem(text='FILTER OPTIONS')
+        menu_item.add_widget(filter_context_menu)
+        popup_desc = ContextMenuTextItem(text='Show description')
+        popup = Popup(title="Filter description (escape to quit)", content=Label(text=self._filter.description()))
+        popup_desc.bind(on_release=lambda x: popup.open())
+        filter_context_menu.add_widget(popup_desc)
+        filter_context_menu.add_widget(
+            ContextMenuTextItem(text='Create', color=[1,0,0,1],
+                                on_release=partial(self.create_filter_callback, self)))
+        app_instance.menus[0].add_widget(menu_item)
+        app_instance.set_menus()
+        filter_context_menu._on_visible(False)
+        filter_context_menu.show()
+        filter_context_menu.hide()
 
-    def create_filter_callback(self):
+    def create_filter_callback(self, inst, value):
         app = App.get_running_app()
         if self._filter is not None:
             self._filter.generate_filter(app.design_graph.design_plot)
-            plot = LinePlot(points=self._filter.frequency_response(), color=[0, 0, 1, 1])
+            plot = custom_plots.FilterPlot(points=self._filter.frequency_response(), color=[0, 0, 1, 1])
             app.design_graph.add_plot(plot)
 
 

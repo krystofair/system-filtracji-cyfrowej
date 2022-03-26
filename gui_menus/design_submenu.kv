@@ -10,6 +10,9 @@ DesignMenu:
         text: "Reset profile"
         on_release: DesignMenu.reset_design_graph(self.parent)
     ContextMenuTextItem:
+        text: "Reset filter plot"
+        on_release: DesignMenu.reset_filter_plot()
+    ContextMenuTextItem:
         text: "interpolation (" + self.parent.interpolation + ")"
         ContextMenu:
             ContextMenuTextItem:
@@ -19,10 +22,10 @@ DesignMenu:
                 text: "linear"
                 on_release: app.get_concrete_menu(DesignMenu).interpolation = self.text
     ContextMenuTextItem:
-        text: "Filter (" + self.parent.filter + ")"
+        text: "Filters list (" + self.parent.filter + ")"
         ContextMenu:
             id: filters_names_list
-    ContextMenuTextItem:
-        text: "Create filter"
-        color: [1,0,0,1]
-        on_release: app.get_concrete_menu(DesignMenu).create_filter_callback()
+    # ContextMenuTextItem:
+        # text: "Create filter"
+        # color: [1,0,0,1]
+        # on_release: app.get_concrete_menu(DesignMenu).create_filter_callback()

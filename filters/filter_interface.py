@@ -46,9 +46,11 @@ class IFilter:
         raise NotImplementedError
 
     def description(self):
-        # Filter description in order to user can find out the internals,
-        # what is interpolation of points in that filter, so user can
-        # choose right method of interpolation profile.
+        """Filter description in order to user can find out the internals,
+        what is interpolation of points in that filter, so user can
+        choose right method of interpolation profile.
+        See class `TestFilterFIR` to see how to return string,
+        which will be nice displayed."""
         raise NotImplementedError
 
     def menu(self):

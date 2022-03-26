@@ -59,6 +59,10 @@ class DesignPlot(LinePlot, Profile):
             pass  # pass cause this is very often and not important.
 
 
+class FilterPlot(LinePlot):
+    """Special class to differentiate a filter plot from others."""
+    pass
 
 
-__all__ = ['DesignPlot']
+
+__all__ = ['DesignPlot', 'FilterPlot']
