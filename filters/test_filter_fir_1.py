@@ -1,4 +1,5 @@
-from . import IFilter
+from .filter_interface import IFilter
+from kivy_garden.contextmenu import ContextMenu
 from scipy.interpolate import CubicSpline
 from scipy.signal import firls, freqz
 import numpy as np
@@ -21,17 +22,16 @@ class TestFilterFIR(IFilter):
             interpolation = profile.interp_func(freqs, amps_dB)
         except:
             interpolation = CubicSpline(freqs, amps_dB)
-        bands = list(range(freqs[0], freqs[len(freqs)-1]))
-        bands.append(bands[len(bands)-1]) if not len(bands) % 2 == 0 else None
-        # TODO: change the way of grouping band to pythonist way.
-        desired = np.power(10, interpolation(bands)/20)
+        bands = list(range(freqs[0], freqs[len(freqs) - 1]))
+        bands.append(bands[len(bands) - 1]) if not len(bands) % 2 == 0 else None
+        desired = np.power(10, interpolation(bands) / 20)
         self._coeffs = firls(99, bands, desired, fs=44100)
 
     def frequency_response(self):
         if self._coeffs is None:
             return []
         freq, response = freqz(self._coeffs, fs=44100)
-        ir_points = list(zip(freq+20, np.abs(response)))
+        ir_points = list(zip(freq + 20, np.abs(response)))
         return ir_points
 
     def load_filter(self, bin_file):
@@ -39,3 +39,14 @@ class TestFilterFIR(IFilter):
 
     def save_filter(self, path):
         pass
+
+    def phase_response(self):
+        pass
+
+    def description(self):
+        return """This is test FIR filter. The filter approximate characteristic by
+        Least-square method. You should add even number of points on graph, because
+        that method take the points by pair."""
+
+    def menu(self):
+        return ContextMenu()

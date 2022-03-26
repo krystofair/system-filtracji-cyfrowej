@@ -182,8 +182,6 @@ class DesignMenu(ContextMenu):
         if self._filter is not None:
             self._filter.generate_filter(app.design_graph.design_plot)
             plot = LinePlot(points=self._filter.frequency_response(), color=[0, 0, 1, 1])
-            #TODO: dodać jakiś interfejs do konwersji wartości z graphu do filtru
-            # bo mogą wystąpić błędy bez zabezpieczenia tego.
             app.design_graph.add_plot(plot)
 
 
