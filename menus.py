@@ -181,12 +181,20 @@ class DesignMenu(ContextMenu):
         """Method is called when someone choose filter from the list.
         Here, the filter instance is created and stored in internal state of
         class `DesignMenu` instance."""
+        if self.filter == '':
+            return
         app_instance = App.get_running_app()
         filter_list = app_instance.loaded_filters
         id = v[:v.index('#')]
         for filter_item in filter_list:
             if id == filter_item.filter_id:
                 self._filter = filter_item()
+        # checking appropriate implementation of filter 'menu' method.
+        filter_context_menu = self._filter.menu()
+        if not isinstance(filter_context_menu, ContextMenu):
+            self._filter = None
+            self.filter = ''
+            return
         # deleting old "filter options" menu
         last_added_menu = app_instance.menus.pop()
         if isinstance(last_added_menu, AppMenuTextItem):
@@ -195,7 +203,6 @@ class DesignMenu(ContextMenu):
             else:
                 app_instance.main_menu.remove_widget(last_added_menu)
         # creating new "filter options" menu
-        filter_context_menu = self._filter.menu()
         menu_item = AppMenuTextItem(text='FILTER OPTIONS')
         menu_item.add_widget(filter_context_menu)
         popup_desc = ContextMenuTextItem(text='Show description')
