@@ -36,7 +36,7 @@ class TestFilterFIR(IFilter):
         if self._coeffs is None:
             return []
         freq, response = freqz(self._coeffs, fs=44100)
-        ir_points = list(zip(freq + 20, 20 * np.log(np.abs(response))))
+        ir_points = list(zip(freq + 0.0001, 20 * np.log(np.abs(response))))
         return ir_points
 
     def load_filter(self, bin_file):
