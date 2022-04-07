@@ -51,10 +51,10 @@ class IFilter:
         choose right method of interpolation profile.
         See class `TestFilterFIR` to see how to return string,
         which will be nice displayed."""
-        raise NotImplementedError
+        return ''
 
     def menu(self):
         """Return generated menu as `ContextMenu` widget for filter parameters.
         This is simpler approach than passes a parameters and generate filter in
         another method."""
-        raise NotImplementedError
+        return None

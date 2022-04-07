@@ -1,6 +1,7 @@
 from .filter_interface import IFilter
 import numpy as np
 
+
 class TestFilterIIR(IFilter):
 
     filter_id = "TestowyFilterekIIR"
@@ -26,7 +27,7 @@ class TestFilterIIR(IFilter):
         except Exception as e:
             # todo pop up for communicate user
             print(e)
-            self._coeffs = None
+            self._coeffs = []
 
     def load_filter(self, bin_file):
         pass

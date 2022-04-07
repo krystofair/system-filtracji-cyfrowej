@@ -8,6 +8,7 @@ import numpy as np
 class TestFilterFIR(IFilter):
     filter_id = 'TeStFiLtEr'
     filter_kind = 'fir'
+    options_menu = None
 
     def __init__(self):
         self._coeffs = None

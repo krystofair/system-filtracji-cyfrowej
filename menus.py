@@ -192,23 +192,23 @@ class DesignMenu(ContextMenu):
         # checking appropriate implementation of filter 'menu' method.
         filter_context_menu = self._filter.menu()
         if not isinstance(filter_context_menu, ContextMenu):
-            self._filter = None
-            self.filter = ''
-            return
+            # If filter doesn't have own menu, here is creating simple ContextMenu
+            filter_context_menu = ContextMenu()
         # deleting old "filter options" menu
-        last_added_menu = app_instance.menus.pop()
+        last_added_menu = app_instance.menus.pop().orig_parent
         if isinstance(last_added_menu, AppMenuTextItem):
             if last_added_menu.text != 'FILTER OPTIONS':
                 app_instance.menus.append(last_added_menu)
             else:
-                app_instance.main_menu.remove_widget(last_added_menu)
+                app_instance.menus[0].remove_widget(last_added_menu)
         # creating new "filter options" menu
         menu_item = AppMenuTextItem(text='FILTER OPTIONS')
         menu_item.add_widget(filter_context_menu)
-        popup_desc = ContextMenuTextItem(text='Show description')
-        popup = Popup(title="Filter description (escape to quit)", content=Label(text=self._filter.description()))
-        popup_desc.bind(on_release=lambda x: popup.open())
-        filter_context_menu.add_widget(popup_desc)
+        if self._filter.description() is not None:
+            popup_desc = ContextMenuTextItem(text='Show description')
+            popup = Popup(title="Filter description (escape to quit)", content=Label(text=self._filter.description()))
+            popup_desc.bind(on_release=lambda x: popup.open())
+            filter_context_menu.add_widget(popup_desc)
         filter_context_menu.add_widget(
             ContextMenuTextItem(text='Create', color=[1,0,0,1],
                                 on_release=partial(self.create_filter_callback, self)))
