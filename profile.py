@@ -1,3 +1,7 @@
+#  Copyright (c) 2022.
+#  This file is part of "System Filtracji Cyfrowej", which is released under GPLv2 license.
+#  Created by Krzysztof Kłapyta.
+
 from platform import architecture as arch
 from functools import reduce
 from kivy.properties import DictProperty, ObjectProperty

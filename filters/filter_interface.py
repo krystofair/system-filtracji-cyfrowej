@@ -1,3 +1,7 @@
+#  Copyright (c) 2022.
+#  This file is part of "System Filtracji Cyfrowej", which is released under GPLv2 license.
+#  Created by Krzysztof Kłapyta.
+
 class BadEntryLine(Exception):
     def __init__(self):
         super().__init__("Bad entry line in filter list's file.")

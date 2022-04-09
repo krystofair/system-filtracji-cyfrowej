@@ -1,3 +1,7 @@
+#  Copyright (c) 2022.
+#  This file is part of "System Filtracji Cyfrowej", which is released under GPLv2 license.
+#  Created by Krzysztof Kłapyta.
+
 import numpy as np
 from kivy_garden.graph import LinePlot, ScatterPlot
 from kivy.properties import NumericProperty, ListProperty, ObjectProperty

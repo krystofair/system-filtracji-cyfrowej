@@ -1,3 +1,7 @@
+#  Copyright (c) 2022.
+#  This file is part of "System Filtracji Cyfrowej", which is released under GPLv2 license.
+#  Created by Krzysztof Kłapyta.
+
 import os.path
 from functools import partial
 

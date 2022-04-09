@@ -1,3 +1,7 @@
+#  Copyright (c) 2022.
+#  This file is part of "System Filtracji Cyfrowej", which is released under GPLv2 license.
+#  Created by Krzysztof Kłapyta.
+
 from kivy.app import App
 from kivy.uix.bubble import Bubble
 import kivy.properties as kp

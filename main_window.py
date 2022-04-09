@@ -1,3 +1,7 @@
+#  Copyright (c) 2022.
+#  This file is part of "System Filtracji Cyfrowej", which is released under GPLv2 license.
+#  Created by Krzysztof Kłapyta.
+
 import os
 
 from menus import *
@@ -71,14 +75,11 @@ class MainWindow(App):
 
     def build(self):
         # utworzenie obiektów opcji w klasie głównej programu
-        # mm = Builder.load_file("main_menu.kv")
         self.main_wnd_view = Builder.load_file("main_window.kv")
         self.set_graph('design')
-        # self.main_wnd_view.ids['place_for_graph'].add_widget(self.graph)
         self.load_known_filters()
         DesignMenu.load()
         self.set_menus()
-        # main_wnd_view.add_widget(mm)
         self.main_wnd_view.add_widget(self.cursor_bubble)
         return self.main_wnd_view
 
