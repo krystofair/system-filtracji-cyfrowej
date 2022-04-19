@@ -2,6 +2,9 @@
 #  This file is part of "System Filtracji Cyfrowej", which is released under GPLv2 license.
 #  Created by Krzysztof Kłapyta.
 
+from menus import FilterMenu
+
+
 class BadEntryLine(Exception):
     def __init__(self):
         super().__init__("Bad entry line in filter list's file.")
@@ -61,4 +64,4 @@ class IFilter:
         """Return generated menu as `ContextMenu` widget for filter parameters.
         This is simpler approach than passes a parameters and generate filter in
         another method."""
-        return None
+        return FilterMenu()

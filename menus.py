@@ -1,21 +1,19 @@
 #  Copyright (c) 2022.
 #  This file is part of "System Filtracji Cyfrowej", which is released under GPLv2 license.
 #  Created by Krzysztof Kłapyta.
-
 import os.path
 from functools import partial
 
 import custom_plots
 import kivy.properties as kp
 # todo zaimportuj tutaj popup kivy
-from custom_graphs import DesignGraph, VisualGraph
+from custom_graphs import DesignGraph
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.label import Label
+from kivy.uix.popup import Popup
 from kivy_garden.contextmenu import AppMenu, ContextMenu, ContextMenuTextItem, AppMenuTextItem
 from scipy.interpolate import CubicSpline, interp1d
-
-from kivy.uix.popup import Popup
 
 
 class FileMenu(ContextMenu):
@@ -195,16 +193,14 @@ class DesignMenu(ContextMenu):
                 self._filter = filter_item()
         # checking appropriate implementation of filter 'menu' method.
         filter_context_menu = self._filter.menu()
-        if not isinstance(filter_context_menu, ContextMenu):
-            # If filter doesn't have own menu, here is creating simple ContextMenu
-            filter_context_menu = ContextMenu()
+        if not filter_context_menu or not isinstance(filter_context_menu, FilterMenu):
+            # If filter doesn't have own menu, here is creating simple FilterMenu(ContextMenu)
+            filter_context_menu = FilterMenu()
         # deleting old "filter options" menu
-        last_added_menu = app_instance.menus.pop().orig_parent
-        if isinstance(last_added_menu, AppMenuTextItem):
-            if last_added_menu.text != 'FILTER OPTIONS':
-                app_instance.menus.append(last_added_menu)
-            else:
-                app_instance.menus[0].remove_widget(last_added_menu)
+        for lam in reversed(app_instance.menus):
+            if isinstance(lam, FilterMenu):
+                app_instance.menus[0].remove_widget(lam.orig_parent or lam.parent)
+                break
         # creating new "filter options" menu
         menu_item = AppMenuTextItem(text='FILTER OPTIONS')
         menu_item.add_widget(filter_context_menu)
@@ -217,10 +213,10 @@ class DesignMenu(ContextMenu):
             ContextMenuTextItem(text='Create', color=[1,0,0,1],
                                 on_release=partial(self.create_filter_callback, self)))
         app_instance.menus[0].add_widget(menu_item)
-        app_instance.set_menus()
         filter_context_menu._on_visible(False)
         filter_context_menu.show()
         filter_context_menu.hide()
+        app_instance.set_menus()
 
     def create_filter_callback(self, inst, value):
         app = App.get_running_app()
@@ -264,3 +260,8 @@ class MainMenu(AppMenu):
                     return True
             except: pass
         return super().collide_point(x, y)
+
+
+class FilterMenu(ContextMenu):
+    """Class created for filters options and in order to differentiate objects instances."""
+    pass

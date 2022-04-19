@@ -2,7 +2,7 @@
 #  This file is part of "System Filtracji Cyfrowej", which is released under GPLv2 license.
 #  Created by Krzysztof Kłapyta.
 
-from .filter_interface import IFilter
+from .filter_interface import IFilter, FilterMenu
 from kivy_garden.contextmenu import ContextMenu
 from scipy.interpolate import CubicSpline
 from scipy.signal import firls, freqz
@@ -59,4 +59,4 @@ Least-square method. You should add even number of points on graph, because
 that method take the points by pair."""
 
     def menu(self):
-        return ContextMenu()
+        return FilterMenu()
