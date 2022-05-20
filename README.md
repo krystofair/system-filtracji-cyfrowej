@@ -1,5 +1,5 @@
 # System Filtracji Cyfrowej
-## Requirements
+## Zależności - requirements
 * certifi==2021.10.8
 * charset-normalizer==2.0.9
 * docutils==0.18.1
@@ -18,3 +18,8 @@
 * requests==2.26.0
 * scipy==1.7.3
 * urllib3==1.26.7
+
+## Uruchomienie - installation/run
+Po przygotowaniu środowiska w Pythonie przez np. `pip install -r requirements.txt`.
+W obecnej wersji należy uruchomić plik main_window.py.
+
