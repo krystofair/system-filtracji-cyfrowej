@@ -21,5 +21,5 @@
 
 ## Uruchomienie - installation/run
 Po przygotowaniu środowiska w Pythonie przez np. `pip install -r requirements.txt`.
-W obecnej wersji należy uruchomić plik main_window.py.
+Uruchomić wirtualne środowisko za pomocą: `source ./Scripts/activate`, a następnie uruchomić plik main_window.py `sh python main_windows.py`
 
