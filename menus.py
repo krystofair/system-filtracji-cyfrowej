@@ -13,7 +13,7 @@ from kivy.lang import Builder
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy_garden.contextmenu import AppMenu, ContextMenu, ContextMenuTextItem, AppMenuTextItem
-from scipy.interpolate import CubicSpline, interp1d
+from interpolation_funcs import INTERPOLATION_FUNCTIONS
 
 
 class FileMenu(ContextMenu):
@@ -36,7 +36,7 @@ class FileMenu(ContextMenu):
 
     def load_audio_cb(self):
         print('load_audio_cb release')
-        # Dialog z wyborem pliku i załadowaniem scieżki,
+        # TODO: Dialog z wyborem pliku i załadowaniem scieżki,
         # nie trzeba od poczatku ladowac pliku.
         # mo.audio_path = '/path/to/audio'
 
@@ -173,9 +173,9 @@ class DesignMenu(ContextMenu):
     def on_interpolation(i, value):
         app = App.get_running_app()
         if value == 'cubic':
-            app.design_graph.design_plot.interp_func = CubicSpline
+            app.design_graph.design_plot.interp_func = INTERPOLATION_FUNCTIONS['cubic']
         elif value == 'linear':
-            app.design_graph.design_plot.interp_func = interp1d
+            app.design_graph.design_plot.interp_func = INTERPOLATION_FUNCTIONS['linear']
         else:
             raise Exception("Interpolation not known.")
 
@@ -206,7 +206,8 @@ class DesignMenu(ContextMenu):
         menu_item.add_widget(filter_context_menu)
         if self._filter.description() is not None:
             popup_desc = ContextMenuTextItem(text='Show description')
-            popup = Popup(title="Filter description (escape to quit)", content=Label(text=self._filter.description()))
+            popup = Popup(title="Filter description (escape to quit)",
+                          content=Label(text=self._filter.description()))
             popup_desc.bind(on_release=lambda x: popup.open())
             filter_context_menu.add_widget(popup_desc)
         filter_context_menu.add_widget(
@@ -222,8 +223,23 @@ class DesignMenu(ContextMenu):
         app = App.get_running_app()
         if self._filter is not None:
             self._filter.generate_filter(app.design_graph.design_plot)
-            plot = custom_plots.FilterPlot(points=self._filter.frequency_response(), color=[0, 0, 1, 1])
+            plot = custom_plots.FilterPlot(points=self._filter.frequency_response(),
+                                           color=[0, 0, 1, 1])
             app.design_graph.add_plot(plot)
+
+    @staticmethod
+    def save_profile():
+        app = App.get_running_app()
+        # TODO: dialog for choice a path.
+        path = "profile.chr"
+        app.design_graph.design_plot.save_profile(path)
+
+    @staticmethod
+    def load_profile():
+        app = App.get_running_app()
+        # TODO: dialog for choice a path.
+        path = "profile.chr"
+        app.design_graph.design_plot.load_profile(path)
 
 
 class ModeMenu(ContextMenu):

@@ -1,10 +1,12 @@
 #  Copyright (c) 2022.
 #  This file is part of "System Filtracji Cyfrowej", which is released under GPLv2 license.
 #  Created by Krzysztof Kłapyta.
+import io
 
-from platform import architecture as arch
-from functools import reduce
+import kivy
+import numpy as np
 from kivy.properties import DictProperty, ObjectProperty
+from interpolation_funcs import find_id, INTERPOLATION_FUNCTIONS
 
 
 class NotLoadedProfileException(Exception):
@@ -12,14 +14,13 @@ class NotLoadedProfileException(Exception):
         super().__init__("Profile is not Loaded")
 
 
+logger = kivy.Logger
+
+
 class Profile:
     """Interface for guide what properties will be passed in 100% to filter during generation."""
     s_points = DictProperty()  # points on chart which are updating during modifying line.
     interp_func = ObjectProperty()  # Method of interpolation of s_points
-
-    def __init__(self):
-        self.byte_len = 4 if arch()[0] == "32bit" else 8
-        self.loaded = False
 
     def get_points_as_list(self):
         tmp_points = list(self.s_points.items())
@@ -27,38 +28,49 @@ class Profile:
         return tmp_points
 
     def save_profile(self, path):
-        if not self.loaded:
-            raise NotLoadedProfileException
+        """
+        Profile and others are saved as <count_of_bytes><bytes>.
+        The exception is for magic number.
+        """
         out_file = open(path, 'wb')
-        out_file.write(b'CHR4' if self.byte_len == 4 else b'CHR8')
-        out_file.write(len(self.s_points).to_bytes(self.byte_len, 'little'))
-        out_file.write(
-            bytes().join(map(lambda x: x.to_bytes(self.byte_len, 'little'),
-                             reduce(lambda x, y: x + [y[0], y[1]], self.s_points, []))))
-        out_file.close()
+        out_file.write(b'CHR0')  # as magic number but on 4 bytes that it is characteristic
+        interpolation_func_bytes = find_id(self.interp_func).encode('utf-8')
+        out_file.write(len(interpolation_func_bytes).to_bytes(8, 'little'))
+        out_file.write(interpolation_func_bytes)
+        pts = self.get_points_as_list()
+        try:
+            x, y = zip(*pts)
+            x_bytes, y_bytes = np.array(x).tobytes(), np.array(y).tobytes()
+            logger.info(x_bytes)
+            logger.info(y_bytes)
+            out_file.write(len(x_bytes).to_bytes(8, 'little'))
+            out_file.write(x_bytes)
+            out_file.write(len(y_bytes).to_bytes(8, 'little'))
+            out_file.write(y_bytes)
+        except Exception as e:
+            logger.error(e)
+        finally:
+            out_file.close()
 
     def load_profile(self, path):
         """throws exception(ValueError, EOFError), when loading file failed"""
-        # TODO: zoptymalizować wczytywanie, bo może nie być wydajne
         in_file = open(path, 'rb')
-        if in_file.read(3) != b'CHR':
+        if in_file.read(4) != b'CHR0':
             in_file.close()
-            raise ValueError("That is not file of profile.")
+            raise ValueError("This is not file of profile/characteristic."
+                             "Or version of it is wrong.")
         try:
-            #TODO: To be certain that loading is in little endian.
-            self.byte_len = int(in_file.read(1), 10)
-            if self.byte_len != 4 and self.byte_len != 8:
-                raise ValueError("Byte's length was wrong number.")
-            count_of_points = int(in_file.read(self.byte_len), 10)
-            for pc in range(count_of_points):
-                x = int(in_file.read(self.byte_len), 10)
-                y = int(in_file.read(self.byte_len), 10)
-                self.s_points.update({x: y})
+            size = int.from_bytes(in_file.read(8), 'little')
+            func_id = in_file.read(size).decode('utf-8')
+            self.interp_func = INTERPOLATION_FUNCTIONS[func_id]
+            size = int.from_bytes(in_file.read(8), 'little')
+            x = list(np.frombuffer(in_file.read(size), dtype=int))
+            size = int.from_bytes(in_file.read(8), 'little')
+            y = list(np.frombuffer(in_file.read(size), dtype=float))
+            self.s_points = dict(zip(x, y))
         except EOFError:
-            print("There was unexpected end of file.")
+            logger.error("There was unexpected end of file.")
         except Exception as e:
-            print(e)
+            logger.exception(e)
             raise e
-        finally:
-            in_file.close()
-        self.loaded = True
+        in_file.close()

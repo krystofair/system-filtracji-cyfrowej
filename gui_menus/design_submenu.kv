@@ -9,7 +9,7 @@ DesignMenu:
         on_release: app.get_concrete_menu(DesignMenu).save_profile()
     ContextMenuTextItem:
         text: "Load Characteristic"
-        on_release: print('app.get_concrete_menu(DesignMenu).load_profile()')
+        on_release: app.get_concrete_menu(DesignMenu).load_profile()
     ContextMenuTextItem:
         text: "Reset profile"
         on_release: DesignMenu.reset_design_graph(self.parent)
