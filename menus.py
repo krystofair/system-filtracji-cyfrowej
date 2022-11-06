@@ -8,12 +8,13 @@ import custom_plots
 import kivy.properties as kp
 # todo zaimportuj tutaj popup kivy
 from custom_graphs import DesignGraph
+from interpolation_funcs import INTERPOLATION_FUNCTIONS
 from kivy.app import App
 from kivy.lang import Builder
+from kivy.logger import Logger
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy_garden.contextmenu import AppMenu, ContextMenu, ContextMenuTextItem, AppMenuTextItem
-from scipy.interpolate import CubicSpline, interp1d
 
 
 class FileMenu(ContextMenu):
@@ -35,20 +36,19 @@ class FileMenu(ContextMenu):
         }
 
     def load_audio_cb(self):
-        print('load_audio_cb release')
-        # Dialog z wyborem pliku i załadowaniem scieżki,
+        Logger.info('load_audio_cb release')
+        # TODO: Dialog z wyborem pliku i załadowaniem scieżki,
         # nie trzeba od poczatku ladowac pliku.
         # mo.audio_path = '/path/to/audio'
 
     def save_audio_cb(self):
-        print('save_audio_cb release')
+        Logger.info('save_audio_cb release')
 
     def load_filter_cb(self):
-        print('load_filter_cb release')
-        # print(self.)
+        Logger.info('load_filter_cb release')
 
     def save_filter_cb(self):
-        print('save_filter_cb release')
+        Logger.info('save_filter_cb release')
 
     def exit_option(self):
         exit(0)
@@ -85,7 +85,7 @@ class VisualizationMenu(ContextMenu):
             app_instance.set_graph('visual')
             return dm
         except Exception as e:
-            print("An exception has occured ", e)
+            Logger.exception(e)
 
     def on_domain(self, instance, value):
         # domain = value if value == 'time' or value == 'frequency' else 'frequency'
@@ -152,7 +152,7 @@ class DesignMenu(ContextMenu):
             app_instance.set_graph('design')
             return dm
         except Exception as e:
-            print('exception', e)
+            Logger.exception(e)
 
     def load_filter_list(self):
         """ Loading list of accessible filters """
@@ -164,7 +164,7 @@ class DesignMenu(ContextMenu):
             self.filter = this.text
 
         for fc in filters_classes_list:
-            t = fc.filter_id+'#'+fc.filter_kind
+            t = fc.filter_id + '#' + fc.filter_kind
             cmti = ContextMenuTextItem(text=t)
             cmti.on_release = partial(release_callback, cmti)
             filters_names_list.add_widget(cmti)
@@ -172,12 +172,10 @@ class DesignMenu(ContextMenu):
     @staticmethod
     def on_interpolation(i, value):
         app = App.get_running_app()
-        if value == 'cubic':
-            app.design_graph.design_plot.interp_func = CubicSpline
-        elif value == 'linear':
-            app.design_graph.design_plot.interp_func = interp1d
-        else:
-            raise Exception("Interpolation not known.")
+        try:
+            app.design_graph.design_plot.interp_func = INTERPOLATION_FUNCTIONS[value]
+        except KeyError as e:
+            Logger.error("Interpolation not known.")
 
     def on_filter(self, i, v):
         """Method is called when someone choose filter from the list.
@@ -206,11 +204,12 @@ class DesignMenu(ContextMenu):
         menu_item.add_widget(filter_context_menu)
         if self._filter.description() is not None:
             popup_desc = ContextMenuTextItem(text='Show description')
-            popup = Popup(title="Filter description (escape to quit)", content=Label(text=self._filter.description()))
+            popup = Popup(title="Filter description (escape to quit)",
+                          content=Label(text=self._filter.description()))
             popup_desc.bind(on_release=lambda x: popup.open())
             filter_context_menu.add_widget(popup_desc)
         filter_context_menu.add_widget(
-            ContextMenuTextItem(text='Create', color=[1,0,0,1],
+            ContextMenuTextItem(text='Create', color=[1, 0, 0, 1],
                                 on_release=partial(self.create_filter_callback, self)))
         app_instance.menus[0].add_widget(menu_item)
         filter_context_menu._on_visible(False)
@@ -222,8 +221,23 @@ class DesignMenu(ContextMenu):
         app = App.get_running_app()
         if self._filter is not None:
             self._filter.generate_filter(app.design_graph.design_plot)
-            plot = custom_plots.FilterPlot(points=self._filter.frequency_response(), color=[0, 0, 1, 1])
+            plot = custom_plots.FilterPlot(points=self._filter.frequency_response(),
+                                           color=[0, 0, 1, 1])
             app.design_graph.add_plot(plot)
+
+    @staticmethod
+    def save_profile():
+        app = App.get_running_app()
+        # TODO: dialog for choice a path.
+        path = "profile.chr"
+        app.design_graph.design_plot.save_profile(path)
+
+    @staticmethod
+    def load_profile():
+        app = App.get_running_app()
+        # TODO: dialog for choice a path.
+        path = "profile.chr"
+        app.design_graph.design_plot.load_profile(path)
 
 
 class ModeMenu(ContextMenu):
@@ -258,7 +272,8 @@ class MainMenu(AppMenu):
                 submenu = item.get_submenu()
                 if submenu.visible and submenu.self_or_submenu_collide_with_point(x, y):
                     return True
-            except: pass
+            except:
+                pass
         return super().collide_point(x, y)
 
 
