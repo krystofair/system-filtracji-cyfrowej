@@ -104,13 +104,13 @@ class VisualizationMenu(ContextMenu):
     def on_play(self, inst, value):
         if value:
             self.stop = False
-            print('start clock interval, some thread?')
+            Logger.info('start clock interval, some thread?')
             # start clock interval.
 
     def on_stop(self, inst, value):
         if value:
             # stop interval
-            print('stop interval')
+            Logger.info('stop interval')
             self.play = False
 
 
