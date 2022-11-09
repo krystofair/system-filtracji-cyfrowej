@@ -65,3 +65,8 @@ class IFilter:
         This is simpler approach than passes a parameters and generate filter in
         another method."""
         return FilterMenu()
+
+    def process(self, samples):
+        """Change data samples"""
+        # TODO: Zmienić te wyjątki na automatyczne przez paczkę ABC.
+        return NotImplementedError

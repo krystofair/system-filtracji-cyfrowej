@@ -119,8 +119,8 @@ class DesignGraph(Graph):
 class VisualGraph(Graph):
     xmax = kp.NumericProperty(20000)
     xmin = kp.NumericProperty(20)
-    ymax = kp.NumericProperty(10)
-    ymin = kp.NumericProperty(-10)
+    ymax = kp.NumericProperty(18)
+    ymin = kp.NumericProperty(-18)
     ylabel = kp.StringProperty('Amplitude (dB)')
     xlabel = kp.StringProperty('freq (Hz)')
     xlog=kp.BooleanProperty(False)
@@ -128,6 +128,22 @@ class VisualGraph(Graph):
     x_grid_label = kp.BooleanProperty(True)
     y_grid = kp.BooleanProperty(True)
     y_grid_label = kp.BooleanProperty(True)
-    y_ticks_major = kp.NumericProperty(2)
+    y_ticks_major = kp.NumericProperty(3)
     x_ticks_major = kp.NumericProperty(500)
     # precision = kp.NumericProperty(2)
+
+    def on_update(self):
+        """
+        Call this when you load new samples to buffer in order to show.
+        Or find another way i.e binding like in interpolation from design graph.
+        """
+        pass
+
+    def load_origins(self, samples):
+        pass
+
+    def load_filtered(self, samples):
+        # TODO: Question if that method is necesarry?
+        # Whether the graph will be executing filtering for itself?
+        pass
+

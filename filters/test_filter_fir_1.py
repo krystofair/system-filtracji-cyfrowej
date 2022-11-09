@@ -3,10 +3,11 @@
 #  Created by Krzysztof Kłapyta.
 
 from .filter_interface import IFilter, FilterMenu
-from kivy_garden.contextmenu import ContextMenu
 from scipy.interpolate import CubicSpline
 from scipy.signal import firls, freqz
+from scipy.signal import lfilter
 import numpy as np
+from kivy.logger import Logger
 
 
 class TestFilterFIR(IFilter):
@@ -34,7 +35,7 @@ class TestFilterFIR(IFilter):
             self._coeffs = firls(99, bands, desired, fs=44100)
         except Exception as e:
             # todo pop up for communicate user
-            print(e)
+            Logger.exception(e)
             self._coeffs = None
 
     def frequency_response(self):
@@ -60,3 +61,10 @@ that method take the points by pair."""
 
     def menu(self):
         return FilterMenu()
+
+    def process(self, samples):
+        if self._coeffs is not None:
+            samples = lfilter(self._coeffs.b,
+                              self._coeffs.a,
+                              samples)
+        return samples

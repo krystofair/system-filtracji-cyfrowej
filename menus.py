@@ -36,7 +36,8 @@ class FileMenu(ContextMenu):
         }
 
     def load_audio_cb(self):
-        Logger.info('load_audio_cb release')
+        Logger.info('set path for audio file - for now it is constant.')
+        self.audio_path = './example_audio.wav'
         # TODO: Dialog z wyborem pliku i załadowaniem scieżki,
         # nie trzeba od poczatku ladowac pliku.
         # mo.audio_path = '/path/to/audio'
@@ -63,8 +64,9 @@ class FileMenu(ContextMenu):
 class VisualizationMenu(ContextMenu):
     ready_samples = kp.BooleanProperty(False)
     original_samples = kp.ObjectProperty()
-    tovisual_samples = kp.ObjectProperty()
+    processed_samples = kp.ObjectProperty()
     domain = kp.StringProperty('frequency')
+    processing_function = kp.ObjectProperty()  # that is conversion function appropriate for domain.
     visual_graph = kp.ObjectProperty()
     play = kp.BooleanProperty(False)
     stop = kp.BooleanProperty(True)

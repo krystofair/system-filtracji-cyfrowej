@@ -9,6 +9,7 @@ from filters import FILTER_LIST
 from cursor_bubble import CursorPosBubble
 
 import kivy
+from kivy.logger import Logger
 from kivy.app import App
 from kivy.config import Config
 from kivy.uix.floatlayout import FloatLayout
@@ -48,7 +49,8 @@ class MainWindow(App):
         grid = self.main_wnd_view.ids['place_for_graph']
         try:
             grid.remove_widget(grid.children[0])
-        except: pass
+        except Exception as e:
+            Logger.exception(e)
         grid.add_widget(self.graph)
         self.cursor_bubble.graph = self.graph
 
