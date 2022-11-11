@@ -6,7 +6,7 @@ from scipy.io import wavfile
 from kivy.logger import Logger
 
 
-def load_audio_file(path):
+def load_audio_data(path):
     try:
         sample_rate, data = wavfile.read(path)
     except Exception as e:

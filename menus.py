@@ -7,14 +7,16 @@ from functools import partial
 import custom_plots
 import kivy.properties as kp
 # todo zaimportuj tutaj popup kivy
-from custom_graphs import DesignGraph
-from interpolation_funcs import INTERPOLATION_FUNCTIONS
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.logger import Logger
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy_garden.contextmenu import AppMenu, ContextMenu, ContextMenuTextItem, AppMenuTextItem
+
+from custom_graphs import DesignGraph
+from interpolation_funcs import INTERPOLATION_FUNCTIONS
+import audio
 
 
 class FileMenu(ContextMenu):
@@ -211,8 +213,10 @@ class DesignMenu(ContextMenu):
             popup_desc.bind(on_release=lambda x: popup.open())
             filter_context_menu.add_widget(popup_desc)
         filter_context_menu.add_widget(
-            ContextMenuTextItem(text='Create', color=[1, 0, 0, 1],
-                                on_release=partial(self.create_filter_callback, self)))
+            ContextMenuTextItem(text='Create', on_release=partial(self.create_filter_callback, self)))
+        filter_context_menu.add_widget(
+            ContextMenuTextItem(text='Apply', on_release=partial(self.apply_filter_callback, self))
+        )
         app_instance.menus[0].add_widget(menu_item)
         filter_context_menu._on_visible(False)
         filter_context_menu.show()
@@ -226,6 +230,16 @@ class DesignMenu(ContextMenu):
             plot = custom_plots.FilterPlot(points=self._filter.frequency_response(),
                                            color=[0, 0, 1, 1])
             app.design_graph.add_plot(plot)
+
+    def apply_filter_callback(self, inst, value):
+        app = App.get_running_app()
+        audiofile_path = app.get_concrete_menu(FileMenu).audio_path
+        audio_data = audio.load_audio_data(audiofile_path)
+        if audio_data is None:
+            return
+        sample_rate, data = audio_data
+        processed_samples = audio.process_samples(data)
+        audio.save_audio_file('processed.wav', processed_samples, sample_rate)
 
     @staticmethod
     def save_profile():
@@ -282,3 +296,8 @@ class MainMenu(AppMenu):
 class FilterMenu(ContextMenu):
     """Class created for filters options and in order to differentiate objects instances."""
     pass
+
+
+class AudioMenu(ContextMenu):
+    def process_file(self, path):
+        app = App.get_running_app()
