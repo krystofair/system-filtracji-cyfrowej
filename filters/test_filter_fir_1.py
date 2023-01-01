@@ -2,10 +2,9 @@
 #  This file is part of "System Filtracji Cyfrowej", which is released under GPLv2 license.
 #  Created by Krzysztof Kłapyta.
 
-from .filter_interface import IFilter, FilterMenu
+from .filter_interface import IFilter, FilterMenu, FilterUtils
 from scipy.interpolate import CubicSpline
-from scipy.signal import firls, freqz
-from scipy.signal import lfilter
+from scipy.signal import firls, freqz, filtfilt, lfilter_zi, lfilter
 import numpy as np
 from kivy.logger import Logger
 
@@ -16,7 +15,11 @@ class TestFilterFIR(IFilter):
     options_menu = None
 
     def __init__(self):
+        self.log = Logger
         self._coeffs = None
+        self.taps = 99
+        self.samples = []
+        self.sample_rate = None
 
     def generate_filter(self, profile):
         points = profile.get_points_as_list()
@@ -26,13 +29,14 @@ class TestFilterFIR(IFilter):
         # XXX Can use interpolation method from profile
         try:
             interpolation = profile.interp_func(freqs, amps_dB)
-        except:
+        except Exception:
             interpolation = CubicSpline(freqs, amps_dB)
         bands = list(range(freqs[0], freqs[len(freqs) - 1]))
         bands.append(bands[len(bands) - 1]) if not len(bands) % 2 == 0 else None
         desired = np.power(10, interpolation(bands) / 20)
+        self.sample_rate = FilterUtils.compute_sample_rate(profile)
         try:
-            self._coeffs = firls(99, bands, desired, fs=44100)
+            self._coeffs = firls(self.taps, bands, desired, fs=self.sample_rate)
         except Exception as e:
             # todo pop up for communicate user
             Logger.exception(e)
@@ -41,7 +45,8 @@ class TestFilterFIR(IFilter):
     def frequency_response(self):
         if self._coeffs is None:
             return []
-        freq, response = freqz(self._coeffs, fs=44100)
+        fs0 = self.sample_rate if self.sample_rate else 44100
+        freq, response = freqz(self._coeffs, fs=fs0)
         ir_points = list(zip(freq + 0.0001, 20 * np.log(np.abs(response))))
         return ir_points
 
@@ -62,9 +67,9 @@ that method take the points by pair."""
     def menu(self):
         return FilterMenu()
 
-    def process(self, samples):
-        if self._coeffs is not None:
-            samples = lfilter(self._coeffs.b,
-                              self._coeffs.a,
-                              samples)
-        return samples
+    def process(self, samples_to_process):
+        self.samples.extend(samples_to_process)
+        processed_samples = lfilter(self._coeffs, np.ones(len(self._coeffs)), self.samples)
+        self.samples = self.samples[len(self.samples) - self.taps:]
+        return processed_samples
+

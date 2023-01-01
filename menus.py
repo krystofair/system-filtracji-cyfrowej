@@ -3,10 +3,12 @@
 #  Created by Krzysztof Kłapyta.
 import os.path
 from functools import partial
+from numpy import ndarray
 
 import custom_plots
 import kivy.properties as kp
 # todo zaimportuj tutaj popup kivy
+import soundfile
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.logger import Logger
@@ -75,7 +77,6 @@ class VisualizationMenu(ContextMenu):
 
     @staticmethod
     def load():
-        from kivy.app import App
         app_instance = App.get_running_app()
         try:
             dynamic_menu_item = app_instance.main_wnd_view.ids['dynamic_menu']
@@ -213,7 +214,8 @@ class DesignMenu(ContextMenu):
             popup_desc.bind(on_release=lambda x: popup.open())
             filter_context_menu.add_widget(popup_desc)
         filter_context_menu.add_widget(
-            ContextMenuTextItem(text='Create', on_release=partial(self.create_filter_callback, self)))
+            ContextMenuTextItem(text='Create',
+                                on_release=partial(self.create_filter_callback, self)))
         filter_context_menu.add_widget(
             ContextMenuTextItem(text='Apply', on_release=partial(self.apply_filter_callback, self))
         )
@@ -234,12 +236,27 @@ class DesignMenu(ContextMenu):
     def apply_filter_callback(self, inst, value):
         app = App.get_running_app()
         audiofile_path = app.get_concrete_menu(FileMenu).audio_path
-        audio_data = audio.load_audio_data(audiofile_path)
-        if audio_data is None:
-            return
-        sample_rate, data = audio_data
-        processed_samples = audio.process_samples(data)
-        audio.save_audio_file('processed.wav', processed_samples, sample_rate)
+        if audiofile_path == '':
+            audiofile_path = './example_audio.wav'
+        sample_rate = soundfile.info(audiofile_path).samplerate
+        channels = soundfile.info(audiofile_path).channels
+        self._filter.generate_filter(app.design_graph.design_plot)
+        data_generator = audio.getting_audio_data(audiofile_path)
+        saving_consumer = audio.create_save_consumer('processed.wav', sample_rate, channels)
+        try:
+            while True:
+                samples = next(data_generator)
+                processed_samples = self._filter.process(samples)
+                saving_consumer.send(processed_samples)
+        except StopIteration:
+            Logger.info("End of processing file correctly.")
+        except Exception as e:
+            Logger.exception(e)
+        finally:
+            try: next(saving_consumer)  # save a file.
+            except StopIteration:
+                Logger.info("Saving processed file.")
+
 
     @staticmethod
     def save_profile():
@@ -296,8 +313,3 @@ class MainMenu(AppMenu):
 class FilterMenu(ContextMenu):
     """Class created for filters options and in order to differentiate objects instances."""
     pass
-
-
-class AudioMenu(ContextMenu):
-    def process_file(self, path):
-        app = App.get_running_app()
