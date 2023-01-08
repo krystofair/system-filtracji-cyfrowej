@@ -32,19 +32,19 @@ FloatLayout:
             AppMenuTextItem:
                 text: "FILE"
                 FileMenu:
-                    ContextMenuDivider:
-                    ContextMenuTextItem:
-                        text: "Open filter"
-                        on_release: self.parent.load_filter_from_file()
-                    ContextMenuTextItem:
-                        text: "Save filter"
-                        on_release: self.parent.save_filter_to_file()
-                    ContextMenuDivider:
+#                    ContextMenuDivider:
+#                    ContextMenuTextItem:
+#                        text: "Open filter"
+#                        on_release: self.parent.load_filter_from_file()
+#                    ContextMenuTextItem:
+#                        text: "Save filter"
+#                        on_release: self.parent.save_filter_to_file()
+#                    ContextMenuDivider:
                     ContextMenuTextItem:
                         text: "Open audio file"
                         on_release: self.parent.load_audio_from_file()
                     ContextMenuTextItem:
-                        text: "Save audio file"
+                        text: "Check progress in processing"
                         on_release: self.parent.save_audio_to_file()
                     ContextMenuDivider:
                     ContextMenuTextItem:

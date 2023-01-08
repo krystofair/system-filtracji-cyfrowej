@@ -2,7 +2,7 @@
 #  This file is part of "System Filtracji Cyfrowej", which is released under GPLv2 license.
 #  Created by Krzysztof Kłapyta.
 
-from .filter_interface import IFilter
+from .filter import IFilter
 import numpy as np
 
 

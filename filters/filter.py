@@ -78,6 +78,10 @@ class IFilter(abc.ABC):
         """Process that samples. And keep state."""
         pass
 
+    @abc.abstractmethod
+    def set_sample_rate(self, sample_rate):
+        pass
+
 
 class FilterUtils:
 

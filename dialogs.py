@@ -18,7 +18,7 @@ def file_chooser_dialog(start_path):
         popup.dismiss()
     chooser = FileChooserListView()
     chooser.path = start_path
-    chooser.filters = ["*.wav", "*.flac", '*.mp3']
+    chooser.filters = ["*.wav"]
     chooser.on_submit = exit_action
     popup.add_widget(chooser)
     popup.open()

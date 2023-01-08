@@ -26,25 +26,30 @@ import audio
 
 class FileMenu(ContextMenu):
     app_mode = kp.StringProperty('design')
-    filter_path = kp.StringProperty('')
-    audio_fd = kp.ObjectProperty(None)
-    filter_fd = kp.ObjectProperty(None)
+
+    # filter_path = kp.StringProperty('')
+    # audio_fd = kp.ObjectProperty(None)
+    # filter_fd = kp.ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
     def load_audio_from_file(self):
-        Logger.info('set path for audio file - for now it is constant.')
-        dialogs.file_chooser_dialog('C:\\Users\\krystofair\\Muzyka')
+        # this dialog after choose file update value in store
+        dialogs.file_chooser_dialog('.')
 
     def save_audio_to_file(self):
-        Logger.info('save_audio_cb release')
-
-    def load_filter_from_file(self):
-        Logger.info('load_filter_cb release')
-
-    def save_filter_to_file(self):
-        Logger.info('save_filter_cb release')
+        Logger.info('save_audio callback release')
+        content = store.get('processing-progress')
+        popup = Popup(title="Filter description (escape to quit)",
+                      content=Label(text=content if content else "unknown"))
+        popup.open()
+    #
+    # def load_filter_from_file(self):
+    #     Logger.info('load_filter_cb release')
+    #
+    # def save_filter_to_file(self):
+    #     Logger.info('save_filter_cb release')
 
     def exit(self):
         exit(0)
@@ -225,33 +230,35 @@ class DesignMenu(ContextMenu):
             popup.open()
             return
         app = App.get_running_app()
-        audiofile_path = store.get('audio-file-path')
-        sample_rate = soundfile.info(audiofile_path).samplerate
-        channels = soundfile.info(audiofile_path).channels
+        read_file_path = store.get('audio-file-path')
+        if read_file_path is None:
+            popup = Popup(title="Audio file to process does not chosen.",
+                          content=Label(text="You should click on FILE menu then use option\n"
+                                             "'Open audio file' and do double click when you\n"
+                                             "find a file you want to process with filter."))
+            popup.open()
+            return
+        file_path = read_file_path[0]
+        sample_rate = soundfile.info(file_path).samplerate
+        channels = soundfile.info(file_path).channels
         self._filter.generate_filter(app.design_graph.design_plot)
-        data_generator = audio.generator_audio_data(audiofile_path)
-        saving_consumer = audio.create_save_consumer('processed.wav', sample_rate, channels)
-        dg = audio.processing_samples(data_generator, self._filter)
 
-        def process_and_save():
-            try:
-                while True:
-                    processed_samples = next(dg)
-                    saving_consumer.send(processed_samples)
-            except StopIteration:
-                Logger.info("End of processing file correctly.")
-            except Exception as e:
-                Logger.exception(e)
-                raise e
-            finally:
-                try:
-                    next(saving_consumer)  # save a file.
-                    self._audio_processing_thread = None
-                except StopIteration:
-                    Logger.info("Saving processed file.")
+        def thread_worker():
+            store.add_or_update('processing-progress', 'started')
+            data_generator = audio.generator_audio_data(file_path)
+            saving_consumer = audio.create_save_consumer('processed.wav', sample_rate, channels)
+            audio.processing_samples(data_generator, saving_consumer, self._filter)
+            # p = Popup(title="Processing file ended.",
+            #           content=Label(text="Processing samples has been ended."))
+            # p.open()
+            store.add_or_update('processing-progress', 'finished')
 
-        self._audio_processing_thread = threading.Thread(target=process_and_save)
+        self._audio_processing_thread = threading.Thread(target=thread_worker)
         self._audio_processing_thread.start()
+        popup = Popup(title="Processing file.",
+                      content=Label(text="File is processing.\n"
+                                         "You can check status in file menu."))
+        popup.open()
 
     @staticmethod
     def save_profile():
