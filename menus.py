@@ -3,11 +3,14 @@
 #  Created by Krzysztof Kłapyta.
 import os.path
 from functools import partial
+
+import dialogs
+import store
 from numpy import ndarray
+import threading
 
 import custom_plots
 import kivy.properties as kp
-# todo zaimportuj tutaj popup kivy
 import soundfile
 from kivy.app import App
 from kivy.lang import Builder
@@ -23,46 +26,28 @@ import audio
 
 class FileMenu(ContextMenu):
     app_mode = kp.StringProperty('design')
-    audio_path = kp.StringProperty('')
     filter_path = kp.StringProperty('')
     audio_fd = kp.ObjectProperty(None)
     filter_fd = kp.ObjectProperty(None)
-    chosen_option = kp.StringProperty('')
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.options = {
-            'load_audio_cb': self.load_audio_cb,
-            'save_audio_cb': self.save_audio_cb,
-            'load_filter_cb': self.load_filter_cb,
-            'save_filter_cb': self.save_filter_cb,
-            'exit_option': self.exit_option
-        }
 
-    def load_audio_cb(self):
+    def load_audio_from_file(self):
         Logger.info('set path for audio file - for now it is constant.')
-        self.audio_path = './example_audio.wav'
-        # TODO: Dialog z wyborem pliku i załadowaniem scieżki,
-        # nie trzeba od poczatku ladowac pliku.
-        # mo.audio_path = '/path/to/audio'
+        dialogs.file_chooser_dialog('C:\\Users\\krystofair\\Muzyka')
 
-    def save_audio_cb(self):
+    def save_audio_to_file(self):
         Logger.info('save_audio_cb release')
 
-    def load_filter_cb(self):
+    def load_filter_from_file(self):
         Logger.info('load_filter_cb release')
 
-    def save_filter_cb(self):
+    def save_filter_to_file(self):
         Logger.info('save_filter_cb release')
 
-    def exit_option(self):
+    def exit(self):
         exit(0)
-
-    def on_chosen_option(self, instance, value):
-        if value == '':
-            return
-        self.options[self.chosen_option]()
-        self.chosen_option = ''
 
 
 class VisualizationMenu(ContextMenu):
@@ -126,6 +111,7 @@ class DesignMenu(ContextMenu):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._filter = None
+        self._audio_processing_thread = None
 
     def reset_design_graph(self):
         app = App.get_running_app()
@@ -142,7 +128,6 @@ class DesignMenu(ContextMenu):
 
     @staticmethod
     def load():
-        from kivy.app import App
         app_instance = App.get_running_app()
         try:
             dynamic_menu_item = app_instance.main_wnd_view.ids['dynamic_menu']
@@ -234,29 +219,39 @@ class DesignMenu(ContextMenu):
             app.design_graph.add_plot(plot)
 
     def apply_filter_callback(self, inst, value):
+        if self._audio_processing_thread is not None and self._audio_processing_thread.is_alive():
+            popup = Popup(title="Processing is already started.",
+                          content=Label(text="Wait for processing to finish."))
+            popup.open()
+            return
         app = App.get_running_app()
-        audiofile_path = app.get_concrete_menu(FileMenu).audio_path
-        if audiofile_path == '':
-            audiofile_path = './example_audio.wav'
+        audiofile_path = store.get('audio-file-path')
         sample_rate = soundfile.info(audiofile_path).samplerate
         channels = soundfile.info(audiofile_path).channels
         self._filter.generate_filter(app.design_graph.design_plot)
-        data_generator = audio.getting_audio_data(audiofile_path)
+        data_generator = audio.generator_audio_data(audiofile_path)
         saving_consumer = audio.create_save_consumer('processed.wav', sample_rate, channels)
-        try:
-            while True:
-                samples = next(data_generator)
-                processed_samples = self._filter.process(samples)
-                saving_consumer.send(processed_samples)
-        except StopIteration:
-            Logger.info("End of processing file correctly.")
-        except Exception as e:
-            Logger.exception(e)
-        finally:
-            try: next(saving_consumer)  # save a file.
-            except StopIteration:
-                Logger.info("Saving processed file.")
+        dg = audio.processing_samples(data_generator, self._filter)
 
+        def process_and_save():
+            try:
+                while True:
+                    processed_samples = next(dg)
+                    saving_consumer.send(processed_samples)
+            except StopIteration:
+                Logger.info("End of processing file correctly.")
+            except Exception as e:
+                Logger.exception(e)
+                raise e
+            finally:
+                try:
+                    next(saving_consumer)  # save a file.
+                    self._audio_processing_thread = None
+                except StopIteration:
+                    Logger.info("Saving processed file.")
+
+        self._audio_processing_thread = threading.Thread(target=process_and_save)
+        self._audio_processing_thread.start()
 
     @staticmethod
     def save_profile():
@@ -271,6 +266,7 @@ class DesignMenu(ContextMenu):
         # TODO: dialog for choice a path.
         path = "profile.chr"
         app.design_graph.design_plot.load_profile(path)
+        app.get_concrete_menu(DesignMenu).interpolation = store.get('interpolation-function')
 
 
 class ModeMenu(ContextMenu):

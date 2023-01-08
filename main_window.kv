@@ -34,22 +34,22 @@ FloatLayout:
                 FileMenu:
                     ContextMenuDivider:
                     ContextMenuTextItem:
-                        text: "Load filter"
-                        on_release: self.parent.chosen_option = 'load_filter_cb'
+                        text: "Open filter"
+                        on_release: self.parent.load_filter_from_file()
                     ContextMenuTextItem:
                         text: "Save filter"
-                        on_release: self.parent.chosen_option = 'save_filter_cb'
+                        on_release: self.parent.save_filter_to_file()
                     ContextMenuDivider:
                     ContextMenuTextItem:
-                        text: "Load audio file"
-                        on_release: self.parent.chosen_option = 'load_audio_cb'
+                        text: "Open audio file"
+                        on_release: self.parent.load_audio_from_file()
                     ContextMenuTextItem:
                         text: "Save audio file"
-                        on_release: self.parent.chosen_option = 'save_audio_cb'
+                        on_release: self.parent.save_audio_to_file()
                     ContextMenuDivider:
                     ContextMenuTextItem:
                         text: "Exit"
-                        on_release: self.parent.chosen_option = 'exit_option'
+                        on_release: self.parent.exit()
             AppMenuTextItem:
                 text: "MODE"
                 ModeMenu:

@@ -6,18 +6,18 @@ FileMenu:
     ContextMenuDivider:
     ContextMenuTextItem:
         text: "Open filter"
-        on_release: self.parent.open_filter_cb()
+        on_release: self.parent.load_filter_from_file()
     ContextMenuTextItem:
         text: "Save filter"
-        on_release: self.parent.save_filter_cb()
+        on_release: self.parent.save_filter_to_file()
     ContextMenuDivider:
     ContextMenuTextItem:
         text: "Open audio file"
-        on_release: self.parent.open_audio_cb()
+        on_release: self.parent.load_audio_from_file()
     ContextMenuTextItem:
         text: "Save audio file"
-        on_release: self.parent.save_audio_cb()
+        on_release: self.parent.save_audio_to_file()
     ContextMenuDivider:
     ContextMenuTextItem:
         text: "Exit"
-        on_release: self.parent.exit_option()
+        on_release: self.parent.exit()

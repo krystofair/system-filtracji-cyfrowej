@@ -5,6 +5,7 @@ import io
 
 import kivy
 import numpy as np
+import store
 from kivy.properties import DictProperty, ObjectProperty
 from interpolation_funcs import find_id, INTERPOLATION_FUNCTIONS
 
@@ -63,6 +64,7 @@ class Profile:
             size = int.from_bytes(in_file.read(8), 'little')
             func_id = in_file.read(size).decode('utf-8')
             self.interp_func = INTERPOLATION_FUNCTIONS[func_id]
+            store.add_or_update('interpolation-function', func_id)
             size = int.from_bytes(in_file.read(8), 'little')
             x = list(np.frombuffer(in_file.read(size), dtype=int))
             size = int.from_bytes(in_file.read(8), 'little')

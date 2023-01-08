@@ -7,6 +7,7 @@ import os
 from menus import *
 from filters import FILTER_LIST
 from cursor_bubble import CursorPosBubble
+import store
 
 import kivy
 from kivy.logger import Logger
@@ -68,17 +69,20 @@ class MainWindow(App):
         self.menus.insert(0, mainmenu)
 
     def set_graph(self, which_one):
+        store.update('current-graph', which_one)
         if which_one == 'visual':
             self.graph = VisualGraph()
         elif which_one == 'design':
             self.graph = self.design_graph
         else:
-            self.graph = self.design_graph
+            raise ValueError(f"The graph {which_one} does not exist.")
 
     def build(self):
+        import store  # important because this create store for first time.
         # utworzenie obiektów opcji w klasie głównej programu
         self.main_wnd_view = Builder.load_file("main_window.kv")
         self.set_graph('design')
+        store.add('current-graph', 'design')
         self.load_known_filters()
         DesignMenu.load()
         self.set_menus()

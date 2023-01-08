@@ -2,7 +2,7 @@
 #  This file is part of "System Filtracji Cyfrowej", which is released under GPLv2 license.
 #  Created by Krzysztof Kłapyta.
 
-from . import filter_interface
+from . import filter
 
 # import list of created filters.
 from .test_filter_fir_1 import TestFilterFIR

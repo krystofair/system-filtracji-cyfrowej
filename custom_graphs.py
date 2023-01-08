@@ -6,6 +6,7 @@ from kivy.app import App
 from kivy_garden.graph import Graph
 import kivy.properties as kp
 from custom_plots import DesignPlot
+import store
 
 
 class DesignGraph(Graph):
@@ -91,6 +92,9 @@ class DesignGraph(Graph):
             if self.collide_plot(x, y):
                 x0, y0 = self.to_data(x, y)
                 self.design_plot.add_point(int(x0), y0)
+                # current_filter = store.get('loaded-filter')
+                # if current_filter:
+                #     store.update(f'{current_filter}-generated', False)
                 return True
         elif touch.button == 'right':
             if self.prev_x != -1:

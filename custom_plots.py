@@ -6,7 +6,7 @@ import numpy as np
 from kivy_garden.graph import LinePlot, ScatterPlot
 from kivy.properties import NumericProperty, ListProperty, ObjectProperty
 from scipy.interpolate import CubicSpline
-from kivy.lang import Builder
+from kivy.lang import Builder  # nie optymalizować tego importu.
 from profile import Profile
 
 
