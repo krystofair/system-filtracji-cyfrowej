@@ -43,7 +43,9 @@ class FileMenu(ContextMenu):
         content = store.get('processing-progress')
         popup = Popup(title="Filter description (escape to quit)",
                       content=Label(text=content if content else "unknown"))
+        popup.size_hint = (0.8, 0.8)
         popup.open()
+
     #
     # def load_filter_from_file(self):
     #     Logger.info('load_filter_cb release')
@@ -201,6 +203,7 @@ class DesignMenu(ContextMenu):
             popup_desc = ContextMenuTextItem(text='Show description')
             popup = Popup(title="Filter description (escape to quit)",
                           content=Label(text=self._filter.description()))
+            popup.size_hint = (0.8, 0.8)
             popup_desc.bind(on_release=lambda x: popup.open())
             filter_context_menu.add_widget(popup_desc)
         filter_context_menu.add_widget(
@@ -227,6 +230,7 @@ class DesignMenu(ContextMenu):
         if self._audio_processing_thread is not None and self._audio_processing_thread.is_alive():
             popup = Popup(title="Processing is already started.",
                           content=Label(text="Wait for processing to finish."))
+            popup.size_hint = (0.8, 0.8)
             popup.open()
             return
         app = App.get_running_app()
@@ -236,22 +240,20 @@ class DesignMenu(ContextMenu):
                           content=Label(text="You should click on FILE menu then use option\n"
                                              "'Open audio file' and do double click when you\n"
                                              "find a file you want to process with filter."))
+            popup.size_hint = (0.8, 0.8)
             popup.open()
             return
         file_path = read_file_path[0]
-        sample_rate = soundfile.info(file_path).samplerate
-        channels = soundfile.info(file_path).channels
         self._filter.generate_filter(app.design_graph.design_plot)
 
         def thread_worker():
             store.add_or_update('processing-progress', 'started')
-            data_generator = audio.generator_audio_data(file_path)
-            saving_consumer = audio.create_save_consumer('processed.wav', sample_rate, channels)
-            audio.processing_samples(data_generator, saving_consumer, self._filter)
+            audio.processing_samples(file_path, 'processed.wav', self._filter)
             # p = Popup(title="Processing file ended.",
             #           content=Label(text="Processing samples has been ended."))
             # p.open()
-            store.add_or_update('processing-progress', 'finished')
+            if not store.get('processing-exception'):
+                store.add_or_update('processing-progress', 'finished')
 
         self._audio_processing_thread = threading.Thread(target=thread_worker)
         self._audio_processing_thread.start()
@@ -263,17 +265,17 @@ class DesignMenu(ContextMenu):
     @staticmethod
     def save_profile():
         app = App.get_running_app()
-        # TODO: dialog for choice a path.
-        path = "profile.chr"
-        app.design_graph.design_plot.save_profile(path)
+        dialogs.SaveDialog(app.design_graph.design_plot.save_profile)
 
     @staticmethod
     def load_profile():
         app = App.get_running_app()
-        # TODO: dialog for choice a path.
-        path = "profile.chr"
-        app.design_graph.design_plot.load_profile(path)
-        app.get_concrete_menu(DesignMenu).interpolation = store.get('interpolation-function')
+
+        def _aaaa():
+            a = App.get_running_app()
+            a.get_concrete_menu(DesignMenu).interpolation = store.get('interpolation-function')
+
+        dialogs.profile_chooser_dialog('.', app.design_graph.design_plot.load_profile, _aaaa)
 
 
 class ModeMenu(ContextMenu):
