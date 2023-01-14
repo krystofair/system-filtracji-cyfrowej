@@ -33,6 +33,8 @@ class Profile:
         Profile and others are saved as <count_of_bytes><bytes>.
         The exception is for magic number.
         """
+        if not path.endswith('.chr'):
+            path = path + ".chr"
         out_file = open(path, 'wb')
         out_file.write(b'CHR0')  # as magic number but on 4 bytes that it is characteristic
         interpolation_func_bytes = find_id(self.interp_func).encode('utf-8')
