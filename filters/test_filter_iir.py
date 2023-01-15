@@ -50,3 +50,6 @@ class TestFilterIIR(IFilter):
 
     def menu(self):
         pass
+
+    def process(self, samples, *args, **kwargs):
+        pass

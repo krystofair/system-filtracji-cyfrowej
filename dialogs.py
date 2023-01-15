@@ -14,12 +14,12 @@ from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
 
 
-def file_chooser_dialog(start_path):
+def audio_file_chooser_dialog(start_path):
     popup = Popup()
     popup.size_hint = (0.9, 0.9)
 
     def exit_action(sel, touch):
-        store.add("audio-file-path", sel)
+        store.add_or_update("audio-file-path", sel)
         popup.dismiss()
     chooser = FileChooserListView()
     chooser.path = start_path

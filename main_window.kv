@@ -44,8 +44,11 @@ FloatLayout:
                         text: "Open audio file"
                         on_release: self.parent.load_audio_from_file()
                     ContextMenuTextItem:
+                        text: "Save processed file."
+                        on_release: self.parent.save_audio()
+                    ContextMenuTextItem:
                         text: "Check progress in processing"
-                        on_release: self.parent.save_audio_to_file()
+                        on_release: self.parent.processing_view_window()
                     ContextMenuDivider:
                     ContextMenuTextItem:
                         text: "Exit"

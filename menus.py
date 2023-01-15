@@ -2,16 +2,15 @@
 #  This file is part of "System Filtracji Cyfrowej", which is released under GPLv2 license.
 #  Created by Krzysztof Kłapyta.
 import os.path
+import subprocess
 from functools import partial
 
 import dialogs
 import store
-from numpy import ndarray
 import threading
 
 import custom_plots
 import kivy.properties as kp
-import soundfile
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.logger import Logger
@@ -24,29 +23,57 @@ from interpolation_funcs import INTERPOLATION_FUNCTIONS
 import audio
 
 
+def do_block_from_str(string, size):
+    result = []
+    s = string
+    while len(s) > size:
+        part1, part2 = s[:size], s[size:]
+        result.append(part1)
+        s = part2
+    if len(s) != 0:
+        result.append(s)
+    return '\n'.join(result)
+
+
 class FileMenu(ContextMenu):
     app_mode = kp.StringProperty('design')
-
-    # filter_path = kp.StringProperty('')
-    # audio_fd = kp.ObjectProperty(None)
-    # filter_fd = kp.ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
     def load_audio_from_file(self):
         # this dialog after choose file update value in store
-        dialogs.file_chooser_dialog('.')
+        dialogs.audio_file_chooser_dialog('.')
 
-    def save_audio_to_file(self):
-        Logger.info('save_audio callback release')
+    def processing_view_window(self):
+        Logger.info('processing_view_window callback release')
         content = store.get('processing-progress')
-        popup = Popup(title="Filter description (escape to quit)",
+        popup = Popup(title="State of processing",
                       content=Label(text=content if content else "unknown"))
         popup.size_hint = (0.8, 0.8)
         popup.open()
 
-    #
+    def save_audio(self):
+        if any([True for file in os.listdir('.') if file == audio.TMP_FILE]):
+            dialogs.SaveDialog(self.save_as)
+        else:
+            popup = Popup(title="Error",
+                          content=Label(text="There was not processing yet."),
+                          size_hint=(0.8, 0.8))
+            popup.open()
+
+    def save_as(self, path):
+        cp = None
+        try:
+            cp = subprocess.run(['copy', audio.TMP_FILE, path], capture_output=True)
+        except FileNotFoundError:
+            cp = subprocess.run(['cp', audio.TMP_FILE, path])
+
+        if cp and cp.returncode == 0:
+            popup = Popup(title="Success",
+                          content=Label(text="File was saved."),
+                          size_hint=(0.8, 0.8))
+            popup.open()
     # def load_filter_from_file(self):
     #     Logger.info('load_filter_cb release')
     #
@@ -54,6 +81,10 @@ class FileMenu(ContextMenu):
     #     Logger.info('save_filter_cb release')
 
     def exit(self):
+        try:
+            os.remove(audio.TMP_FILE)
+        except Exception as e:
+            Logger.info(f"Tmp file cannot be removed {e}")
         exit(0)
 
 
@@ -202,8 +233,8 @@ class DesignMenu(ContextMenu):
         if self._filter.description() is not None:
             popup_desc = ContextMenuTextItem(text='Show description')
             popup = Popup(title="Filter description (escape to quit)",
-                          content=Label(text=self._filter.description()))
-            popup.size_hint = (0.8, 0.8)
+                          content=Label(text=self._filter.description()),
+                          size_hint=(0.8, 0.8))
             popup_desc.bind(on_release=lambda x: popup.open())
             filter_context_menu.add_widget(popup_desc)
         filter_context_menu.add_widget(
@@ -244,11 +275,17 @@ class DesignMenu(ContextMenu):
             popup.open()
             return
         file_path = read_file_path[0]
-        self._filter.generate_filter(app.design_graph.design_plot)
+        try:
+            self._filter.generate_filter(app.design_graph.design_plot)
+        except Exception as e:
+            popup = Popup(title="Generating filter failed.",
+                          content=Label(text=do_block_from_str(str(e), 100)))
+            popup.size_hint = (0.8, 0.8)
+            popup.open()
 
         def thread_worker():
-            store.add_or_update('processing-progress', 'started')
-            audio.processing_samples(file_path, 'processed.wav', self._filter)
+            store.add('processing-progress', 'started')
+            audio.processing_samples(file_path, self._filter)
             # p = Popup(title="Processing file ended.",
             #           content=Label(text="Processing samples has been ended."))
             # p.open()
@@ -259,7 +296,8 @@ class DesignMenu(ContextMenu):
         self._audio_processing_thread.start()
         popup = Popup(title="Processing file.",
                       content=Label(text="File is processing.\n"
-                                         "You can check status in file menu."))
+                                         "You can check status in file menu."),
+                      size_hint=(0.8, 0.8))
         popup.open()
 
     @staticmethod

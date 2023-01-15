@@ -27,12 +27,10 @@ class IFilter(abc.ABC):
         """
         pass
 
-    def load_filter(self, bin_file):
+    @classmethod
+    def load_filter(cls, bin_file_or_path):
         """
-        Method used to load internal representation of filter,
-        Args:
-            bin_file: binary file from filter can be loaded, this file has checked by id before pass
-                      to.
+        Method used to load internal representation of filter and create it.
         """
         raise NotImplementedError
 
@@ -74,11 +72,13 @@ class IFilter(abc.ABC):
         return FilterMenu()
 
     @abc.abstractmethod
-    def process(self, samples):
-        """Process that samples. And keep state."""
+    def process(self, samples, *args, **kwargs):
+        """
+        Process that samples. And keep state.
+            samples - N-D np array, where N is amount of channels.
+        """
         pass
 
-    @abc.abstractmethod
     def set_sample_rate(self, sample_rate):
         pass
 

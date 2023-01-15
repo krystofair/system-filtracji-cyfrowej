@@ -20,7 +20,7 @@ class TestFilterFIR(IFilter):
         self.log = Logger
         self._coeffs = None  # aka. numerator coefficients
         self.taps = 99
-        self.samples = []  # deque(maxlen=self.taps*2)
+        self.samples = deque(maxlen=self.taps*2)
         self.state = None
         self.sample_rate = None
         # store.add('loaded-filter', self.filter_id)
@@ -61,11 +61,38 @@ class TestFilterFIR(IFilter):
         ir_points = list(zip(freq + 20, 20 * np.log(np.abs(response))))
         return ir_points
 
-    def load_filter(self, bin_file):
-        pass
+    @classmethod
+    def load_filter(cls, binfile_or_path):
+        if isinstance(binfile_or_path, str):
+            file = open(binfile_or_path, 'rb')
+        else:
+            file = binfile_or_path
+        if b'FIL8' != file.read(len(b'FIL8')):
+            raise Exception("This file is not compatible version of filter file")
+        filter_id_len = int.from_bytes(file.read(8), 'little')
+        filter_id = file.read(filter_id_len).decode('utf-8')
+        if filter_id != cls.filter_id:
+            raise Exception(f"From file {file.name} cannot create filter {cls.filter_id}.")
+        this = cls()
+        count_of_coeffs = int.from_bytes(file.read(16), 'little')
+        this._coeffs = np.frombuffer(file.read(count_of_coeffs))
+        return this
 
     def save_filter(self, path):
-        pass
+        """
+        Profile and others are saved as <count_of_bytes><bytes>.
+        The exception is for magic number.
+        """
+        if self._coeffs is not None:
+            out_file = open(path, 'wb')
+            out_file.write(b'FIL8')  # as magic number but on 4 bytes that it is characteristic
+            # here will be bug if the filter_id is out of bounds eight bytes.
+            # but 8 bytes imply 8*8 = 64 bits so this should be enough
+            out_file.write(len(self.filter_id).to_bytes(8, 'little'))
+            out_file.write(self.filter_id.encode('utf-8'))
+            out_file.write(len(self._coeffs.dtype).to_bytes(16, 'little'))
+            out_file.write(self._coeffs)
+            out_file.close()
 
     def phase_response(self):
         pass
@@ -81,11 +108,9 @@ that method take the points by pair."""
     def set_sample_rate(self, sample_rate):
         self.sample_rate = sample_rate
 
-    def process(self, samples_to_process):
-        self.samples.extend(samples_to_process)
-        denominator_a = np.ones(len(self._coeffs))
-        processed_samples = lfilter(self._coeffs, denominator_a, self.samples, zi=self.state)
-        self.state = lfiltic(self._coeffs, denominator_a, processed_samples)
-        self.samples = self.samples[len(self.samples) - self.taps:]
-        return processed_samples
+    def process(self, samples_to_process, *args, **kwargs):
+        denominator_a = np.zeros(len(self._coeffs)-1)
+        denominator_a[0] = 1
+        ps = lfilter(self._coeffs, denominator_a, samples_to_process, axis=0)
+        return ps
 

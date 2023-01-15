@@ -7,16 +7,19 @@ from . import filter
 # import list of created filters.
 from .test_filter_fir_1 import TestFilterFIR
 from .test_filter_iir import TestFilterIIR
+from .somebutter import HighpassButterWorthFilter
 
 
 # list for possibility of iterate by classes
 FILTER_LIST = [
     TestFilterFIR,
-    TestFilterIIR
+    TestFilterIIR,
+    HighpassButterWorthFilter
 ]
 
 __all__ = [
     'FILTER_LIST',
     'TestFilterFIR',
-    'TestFilterIIR'
+    'TestFilterIIR',
+    'HighpassButterWorthFilter'
 ]
