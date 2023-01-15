@@ -2,13 +2,14 @@
 #  This file is part of "System Filtracji Cyfrowej", which is released under GPLv2 license.
 #  Created by Krzysztof Kłapyta.
 
-from .filter import IFilter, FilterMenu, FilterUtils
-import store
 from collections import deque
-from scipy.interpolate import CubicSpline
-from scipy.signal import firls, freqz, lfiltic, lfilter
+
 import numpy as np
 from kivy.logger import Logger
+from scipy.interpolate import CubicSpline
+from scipy.signal import firls, freqz, lfilter
+
+from .filter import IFilter, FilterMenu, FilterUtils
 
 
 class TestFilterFIR(IFilter):
@@ -23,13 +24,8 @@ class TestFilterFIR(IFilter):
         self.samples = deque(maxlen=self.taps*2)
         self.state = None
         self.sample_rate = None
-        # store.add('loaded-filter', self.filter_id)
-        # store.add(f'{self.filter_id}-generated', False)
 
     def generate_filter(self, profile):
-        # if store.get(f'{self.filter_id}-generated'):
-        #     Logger.info('that filter was previously generated')
-        #     return
         points = profile.get_points_as_list()
         if len(points) < 2:
             return
@@ -46,12 +42,10 @@ class TestFilterFIR(IFilter):
             self.sample_rate = FilterUtils.compute_sample_rate(profile)
         try:
             self._coeffs = firls(self.taps, bands, desired, fs=self.sample_rate)
-            # store.update(f'{self.filter_id}-generated', True)
         except Exception as e:
             # todo pop up for communicate user
             Logger.exception(e)
             self._coeffs = None
-        # Logger.info('filter generated')
 
     def frequency_response(self):
         if self._coeffs is None:

@@ -1,13 +1,11 @@
 #  Copyright (c) 2022.
 #  This file is part of "System Filtracji Cyfrowej", which is released under GPLv2 license.
 #  Created by Krzysztof Kłapyta.
-import menus
+import os
+
+import soundfile
 import store
 from kivy.logger import Logger
-import soundfile
-import wave
-import numpy as np
-import os
 
 TMP_FILE = 'tmp_processed_file.wav'
 
