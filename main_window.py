@@ -109,3 +109,7 @@ class MainWindow(App):
 
 if __name__ == '__main__':
     MainWindow().run()
+    try:
+        os.remove(audio.TMP_FILE)
+    except Exception as e:
+        Logger.info(f"Tmp file cannot be removed {e}")
