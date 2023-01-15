@@ -20,6 +20,12 @@
 * urllib3==1.26.7
 
 ## Uruchomienie - installation/run
-Po przygotowaniu środowiska w Pythonie przez np. `pip install -r requirements.txt`.
-Uruchomić wirtualne środowisko za pomocą: `source ./Scripts/activate`, a następnie uruchomić plik main_window.py `python main_windows.py`
+Należy zainstalować moduł `venv` dla języka Python w systemie.
+A następnie wykorzystać go używając komendy `python -m venv .`,
+gdzie "." to aktualny katalog repozytorium w którym się znajdujemy.
+Uruchomić wirtualne środowisko za pomocą: `source ./Scripts/activate`,
+a w nim zainstalować zależności używając: `pip install -r requirements.txt`.
+Można upewnić się czy program "pip" na pewno odnosi się do stworzonego środowiska przez użycie
+`which pip` - na pewno działa w systemie linux, lub w konsoli "git bash".
+Będąc dalej w wirtualnym środowisku uruchomić plik main_window.py `python main_windows.py`
 
