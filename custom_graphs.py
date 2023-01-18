@@ -22,7 +22,7 @@ class DesignGraph(Graph):
     y_grid = kp.BooleanProperty(True)
     y_grid_label = kp.BooleanProperty(True)
     ylabel = kp.StringProperty('Amplitude (dB)')
-    xlabel = kp.StringProperty('freq (Hz)')
+    xlabel = kp.StringProperty('frequency (Hz)')
     design_plot = kp.ObjectProperty(None)
     prev_touch = kp.ObjectProperty(None, allownone=True)
     prev_x = kp.NumericProperty(-1)
