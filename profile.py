@@ -65,7 +65,8 @@ class Profile:
         try:
             size = int.from_bytes(in_file.read(8), 'little')
             func_id = in_file.read(size).decode('utf-8')
-            self.interp_func = INTERPOLATION_FUNCTIONS[func_id]
+            try: self.interp_func = INTERPOLATION_FUNCTIONS[func_id]
+            except KeyError: self.interp_func = self.interp_func
             store.add_or_update('interpolation-function', func_id)
             size = int.from_bytes(in_file.read(8), 'little')
             x = list(np.frombuffer(in_file.read(size), dtype=int))
