@@ -23,8 +23,11 @@ DesignMenu:
                 text: "cubic"
                 on_release: app.get_concrete_menu(DesignMenu).interpolation = self.text
             ContextMenuTextItem:
-                text: "linear"
+                text: "interp1d"
                 on_release: app.get_concrete_menu(DesignMenu).interpolation = self.text
+#            ContextMenuTextItem:
+#                text: "linear"
+#                on_release: app.get_concrete_menu(DesignMenu).interpolation = self.text
     ContextMenuTextItem:
         text: "Filters list (" + self.parent.filter + ")"
         ContextMenu:

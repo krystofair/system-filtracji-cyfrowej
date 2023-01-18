@@ -10,7 +10,7 @@ from scipy.interpolate import interp1d, CubicSpline
 
 INTERPOLATION_FUNCTIONS = {
     "cubic": CubicSpline,
-    "linear": interp1d
+    "interp1d": interp1d
 }
 
 

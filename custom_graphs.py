@@ -12,8 +12,8 @@ import store
 class DesignGraph(Graph):
     xmax = kp.NumericProperty(20000)
     xmin = kp.NumericProperty(20)
-    ymax = kp.NumericProperty(20)
-    ymin = kp.NumericProperty(-20)
+    ymax = kp.NumericProperty(12)
+    ymin = kp.NumericProperty(-12)
     xlog = kp.BooleanProperty(True)
     x_ticks_major = kp.NumericProperty(0.1)
     x_grid = kp.BooleanProperty(True)

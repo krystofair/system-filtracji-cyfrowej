@@ -228,7 +228,7 @@ class DesignMenu(ContextMenu):
                 app_instance.menus[0].remove_widget(lam.orig_parent or lam.parent)
                 break
         # creating new "filter options" menu
-        menu_item = AppMenuTextItem(text='FILTER OPTIONS')
+        menu_item = AppMenuTextItem(text=f'{self._filter.filter_id} OPTIONS')
         menu_item.add_widget(filter_context_menu)
         if self._filter.description() is not None:
             popup_desc = ContextMenuTextItem(text='Show description')
