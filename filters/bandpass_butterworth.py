@@ -40,7 +40,7 @@ class BandpassButterworthFilter(IFilter):
             return []
         boundary_freq = profile.get_points_as_list()
         band_start, band_stop = boundary_freq[0][0], boundary_freq[-1][0]
-        self.b, self.a = butter(self.order, [band_start-19, band_stop], btype='bandpass', output='ba',
+        self.b, self.a = butter(self.order, [band_start, band_stop], btype='bandpass', output='ba',
                                 fs=self.fs)
 
     @classmethod
