@@ -217,6 +217,7 @@ class DesignMenu(ContextMenu):
         for filter_item in filter_list:
             if id == filter_item.filter_id:
                 self._filter = filter_item()
+                store.add_or_update('loaded-filter', self._filter)
         # checking appropriate implementation of filter 'menu' method.
         filter_context_menu = self._filter.menu()
         if not filter_context_menu or not isinstance(filter_context_menu, FilterMenu):

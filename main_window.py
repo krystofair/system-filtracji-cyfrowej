@@ -77,24 +77,8 @@ class MainWindow(App):
         else:
             raise ValueError(f"The graph {which_one} does not exist.")
 
-    def configure_kivy(self):
-        _path = os.path.dirname(os.path.realpath(__file__))
-        os.environ['KIVY_HOME'] = _path
-        Config.read(os.path.join(_path, 'config.ini'))
-        Config.set('kivy', 'exit_on_escape', 0)
-        Config.set('kivy', 'log_maxfiles', 1)
-        Config.set('kivy', 'log_dir', os.path.join(_path, "logs"))
-        Config.set('input', 'mouse', 'mouse, disable_multitouch')
-        Config.set('graphics', 'height', 764)
-        Config.set('graphics', 'width', 1024)
-        Config.set('graphics', 'minimum_height', 600)
-        Config.set('graphics', 'minimum_width', 800)
-        Config.set('graphics', 'maxfps', 30)
-        Config.write()
-
     def build(self):
         import store  # important because this create store for first time.
-        self.configure_kivy()
         self.title = "System Filtracji Cyfrowej"
         # utworzenie obiektów opcji w klasie głównej programu
         self.main_wnd_view = Builder.load_file("main_window.kv")
@@ -107,7 +91,24 @@ class MainWindow(App):
         return self.main_wnd_view
 
 
+def configure_kivy():
+    _path = os.path.dirname(os.path.realpath(__file__))
+    # os.environ['KIVY_HOME'] = _path
+    Config.read(os.path.join(_path, 'config.ini'))
+    Config.set('kivy', 'exit_on_escape', 0)
+    Config.set('kivy', 'log_maxfiles', 1)
+    # Config.set('kivy', 'log_dir', os.path.join(_path, "logs"))
+    Config.set('input', 'mouse', 'mouse, disable_multitouch')
+    Config.set('graphics', 'height', 764)
+    Config.set('graphics', 'width', 1024)
+    Config.set('graphics', 'minimum_height', 600)
+    Config.set('graphics', 'minimum_width', 800)
+    Config.set('graphics', 'maxfps', 30)
+    Config.write()
+
+
 if __name__ == '__main__':
+    configure_kivy()
     MainWindow().run()
     try:
         os.remove(audio.TMP_FILE)

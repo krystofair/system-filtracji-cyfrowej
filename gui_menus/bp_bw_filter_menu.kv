@@ -1,0 +1,16 @@
+#:import bpbutterworthfiltermenu filters.menus.bpbutterworthfiltermenu
+BandpassBwFilterMenu:
+    id: bp_bw_filter_menu
+    ContextMenuTextItem:
+        text: "Set Order"
+        ContextMenu:
+            id: choosing_order
+            ContextMenuTextItem:
+                text: "1"
+                on_release: bpbutterworthfiltermenu.set_order(1)
+            ContextMenuTextItem:
+                text: "2"
+                on_release: bpbutterworthfiltermenu.set_order(2)
+            ContextMenuTextItem:
+                text: "3"
+                on_release: bpbutterworthfiltermenu.set_order(3)
