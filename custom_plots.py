@@ -17,7 +17,7 @@ class DesignPlot(LinePlot, Profile):
     at full domain. From first two points there is a straight line.
     """
     line_width = NumericProperty(1)
-    color = ListProperty([1, 0, 0, 1])
+    color = ListProperty([0.768, 0.219, 0.901, 1])
     color2 = ListProperty([1, 1, 1, 1])
     point_size = NumericProperty(3)
     scatter_plot = ObjectProperty()

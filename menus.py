@@ -2,6 +2,7 @@
 #  This file is part of "System Filtracji Cyfrowej", which is released under GPLv2 license.
 #  Created by Krzysztof Kłapyta.
 import os.path
+import random
 import subprocess
 from functools import partial
 
@@ -149,10 +150,14 @@ class DesignMenu(ContextMenu):
     filter = kp.StringProperty()
     interpolation = kp.StringProperty('cubic')
 
+    def random_color(self):
+        return [random.random(), random.random(), random.random(), 1]
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._filter = None
         self._audio_processing_thread = None
+        self.color_pointer = 0
 
     def reset_design_graph(self):
         app = App.get_running_app()
@@ -258,7 +263,7 @@ class DesignMenu(ContextMenu):
         if self._filter is not None:
             self._filter.generate_filter(app.design_graph.design_plot)
             plot = custom_plots.FilterPlot(points=self._filter.frequency_response(),
-                                           color=[0, 0, 1, 1])
+                                           color=self.random_color())
             app.design_graph.add_plot(plot)
 
     def apply_filter_callback(self, inst, value):
@@ -306,7 +311,7 @@ class DesignMenu(ContextMenu):
         store.add('progress-bar', progress_bar)
         grid_layout = GridLayout(rows=2, orientation='tb-lr')
         grid_layout.add_widget(Label(text="File is processing.\n"
-                              "You can check status in file menu if you close this popup."))
+                                          "You can check status in file menu if you close this popup."))
         grid_layout.add_widget(progress_bar)
         store.add('popup-processing-content', grid_layout)
         self._audio_processing_thread = threading.Thread(target=thread_worker)
