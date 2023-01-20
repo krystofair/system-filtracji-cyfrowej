@@ -52,7 +52,7 @@ class TestFilterFIR(IFilter):
             return []
         fs0 = self.sample_rate if self.sample_rate else 44100
         freq, response = freqz(self._coeffs, fs=fs0)
-        ir_points = list(zip(freq + 20, 20 * np.log(np.abs(response))))
+        ir_points = list(zip(freq, 20 * np.log(np.abs(response))))
         return ir_points
 
     @classmethod

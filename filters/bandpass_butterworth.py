@@ -1,7 +1,6 @@
 #  Copyright (c) 2023.
 #  This file is part of "System Filtracji Cyfrowej", which is released under GPLv2 license.
 #  Created by Krzysztof Kłapyta.
-from functools import partial
 
 import numpy as np
 from filters.filter import IFilter
@@ -54,7 +53,7 @@ class BandpassButterworthFilter(IFilter):
         if self.b is None or self.a is None:
             return []
         freq, response = freqz(self.b, self.a, fs=self.fs)
-        ir_points = list(zip(freq+20, 20 * np.log(np.abs(response))))
+        ir_points = list(zip(freq, 20 * np.log(np.abs(response))))
         return ir_points
 
     def set_order(self, num):
