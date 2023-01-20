@@ -89,13 +89,17 @@ def processing_samples(read_path, the_filter, blockrate=1):
                                      channels=read_file.channels)
     total_processed_blocks = 0
     BLOCKS = read_file.samplerate * blockrate
+    all_blocks = read_file.frames
+    store.update('processing-progress', f"Status: processing")
+    progress_bar = store.get('progress-bar')
     try:
         for samples in read_file.blocks(BLOCKS):
             resampled = the_filter.process(samples)
             write_file.write(resampled)
             total_processed_blocks += 1
-            store.update('processing-progress', f"Processed blocks = {total_processed_blocks}\n"
-                                                f"One block has {BLOCKS}")
+            percent = total_processed_blocks*BLOCKS/all_blocks*100
+            if progress_bar:
+                progress_bar.value = percent
     except Exception as e:
         Logger.exception(e)
         store.add_or_update('processing-progress', do_block_from_str(str(e), 50))

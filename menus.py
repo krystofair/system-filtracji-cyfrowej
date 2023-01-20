@@ -14,8 +14,10 @@ import kivy.properties as kp
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.logger import Logger
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
+from kivy.uix.progressbar import ProgressBar
 from kivy_garden.contextmenu import AppMenu, ContextMenu, ContextMenuTextItem, AppMenuTextItem
 
 from custom_graphs import DesignGraph
@@ -74,6 +76,7 @@ class FileMenu(ContextMenu):
                           content=Label(text="File was saved."),
                           size_hint=(0.8, 0.8))
             popup.open()
+
     # def load_filter_from_file(self):
     #     Logger.info('load_filter_cb release')
     #
@@ -292,13 +295,23 @@ class DesignMenu(ContextMenu):
             # p.open()
             if not store.get('processing-exception'):
                 store.add_or_update('processing-progress', 'finished')
+            pb = store.get('progress-bar')
+            ppc = store.get('popup-processing-content')
+            if pb and ppc:
+                ppc.remove_widget(pb)
+                store.delete('progress-bar')
+                store.delete('popup-processing-content')
 
+        progress_bar = ProgressBar(max=100)
+        store.add('progress-bar', progress_bar)
+        grid_layout = GridLayout(rows=2, orientation='tb-lr')
+        grid_layout.add_widget(Label(text="File is processing.\n"
+                              "You can check status in file menu if you close this popup."))
+        grid_layout.add_widget(progress_bar)
+        store.add('popup-processing-content', grid_layout)
         self._audio_processing_thread = threading.Thread(target=thread_worker)
         self._audio_processing_thread.start()
-        popup = Popup(title="Processing file.",
-                      content=Label(text="File is processing.\n"
-                                         "You can check status in file menu."),
-                      size_hint=(0.8, 0.8))
+        popup = Popup(title="Processing file.", content=grid_layout, size_hint=(0.8, 0.8))
         popup.open()
 
     @staticmethod
