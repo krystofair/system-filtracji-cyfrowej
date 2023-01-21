@@ -27,5 +27,5 @@ Uruchomić wirtualne środowisko za pomocą: `source ./Scripts/activate`,
 a w nim zainstalować zależności używając: `pip install -r requirements.txt`.
 Można upewnić się czy program "pip" na pewno odnosi się do stworzonego środowiska przez użycie
 `which pip` - na pewno działa w systemie linux, lub w konsoli "git bash".
-Będąc dalej w wirtualnym środowisku uruchomić plik main_window.py `python main_windows.py`
+Będąc dalej w wirtualnym środowisku uruchomić plik main_window.py `python main_window.py`
 
