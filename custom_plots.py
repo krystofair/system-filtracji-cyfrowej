@@ -50,8 +50,7 @@ class DesignPlot(LinePlot, Profile):
 
     def draw(self, *args):
         super().draw(*args)
-        points = self._interpolate_points()
-        self.scatter_plot.points = points
+        self.scatter_plot.points = self._interpolate_points()
 
     def add_point(self, x, y, /):
         self.s_points.update({int(x): round(y, ndigits=2)})

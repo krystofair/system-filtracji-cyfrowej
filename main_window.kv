@@ -2,7 +2,6 @@
 #  This file is part of "System Filtracji Cyfrowej", which is released under GPLv2 license.
 #  Created by Krzysztof Kłapyta.
 
-#:import Window kivy.core.window.Window
 FloatLayout:
     MainLayout:
         size: root.width, root.height-35
@@ -13,16 +12,6 @@ FloatLayout:
             orientation: "tb-lr"
             rows: 2
             cols: 2
-            #DesignGraph:
-            #    id: phase_graph
-            #    grid: True
-            #    ylabel: "Phase"
-            #    xlabel: "Hz"
-            #    y_grid: True
-            #    y_grid_label: True
-            #    xlog: True
-            #    x_ticks_major: 0.1
-            #    x_grid_label: True
     AppMenuALayout:
         id: anchor_main_menu
         anchor_y: 'top'
@@ -32,14 +21,6 @@ FloatLayout:
             AppMenuTextItem:
                 text: "FILE"
                 FileMenu:
-#                    ContextMenuDivider:
-#                    ContextMenuTextItem:
-#                        text: "Open filter"
-#                        on_release: self.parent.load_filter_from_file()
-#                    ContextMenuTextItem:
-#                        text: "Save filter"
-#                        on_release: self.parent.save_filter_to_file()
-#                    ContextMenuDivider:
                     ContextMenuTextItem:
                         text: "Open audio file"
                         on_release: self.parent.load_audio_from_file()
@@ -53,15 +34,6 @@ FloatLayout:
                     ContextMenuTextItem:
                         text: "Exit"
                         on_release: self.parent.exit()
-#            AppMenuTextItem:
-#                text: "MODE"
-#                ModeMenu:
-#                    ContextMenuTextItem:
-#                        text: "Design"
-#                        on_release: self.parent.chosen_mode = 'design'
-#                    ContextMenuTextItem:
-#                        text: "Visualization"
-#                        on_release: self.parent.chosen_mode = 'visualization'
             AppMenuTextItem:
                 text: ""
                 id: dynamic_menu

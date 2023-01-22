@@ -7,6 +7,7 @@ import subprocess
 from functools import partial
 
 import dialogs
+import soundfile
 import store
 import threading
 
@@ -258,10 +259,22 @@ class DesignMenu(ContextMenu):
         filter_context_menu.hide()
         app_instance.set_menus()
 
+    def show_popup_with_choosing_audio_file(self):
+        popup = Popup(title="Audio file to process does not chosen.",
+                      content=Label(text="You should click on FILE menu then use option\n"
+                                         "'Open audio file' and do double click when you\n"
+                                         "find a file you want to process with filter."))
+        popup.size_hint = (0.8, 0.8)
+        popup.open()
+
     def create_filter_callback(self, inst, value):
         app = App.get_running_app()
+        sample_rate = audio.get_sample_rate_from_file()
+        if sample_rate is None:
+            self.show_popup_with_choosing_audio_file()
+            return
         if self._filter is not None:
-            self._filter.generate_filter(app.design_graph.design_plot)
+            self._filter.generate_filter(app.design_graph.design_plot, sample_rate)
             plot = custom_plots.FilterPlot(points=self._filter.frequency_response(),
                                            color=self.random_color())
             app.design_graph.add_plot(plot)
@@ -274,18 +287,13 @@ class DesignMenu(ContextMenu):
             popup.open()
             return
         app = App.get_running_app()
-        read_file_path = store.get('audio-file-path')
-        if read_file_path is None:
-            popup = Popup(title="Audio file to process does not chosen.",
-                          content=Label(text="You should click on FILE menu then use option\n"
-                                             "'Open audio file' and do double click when you\n"
-                                             "find a file you want to process with filter."))
-            popup.size_hint = (0.8, 0.8)
-            popup.open()
+        fs = audio.get_sample_rate_from_file()
+        if fs is None:
+            self.show_popup_with_choosing_audio_file()
             return
-        file_path = read_file_path[0]
+        file_path = store.get('audio-file-path')[0]
         try:
-            self._filter.generate_filter(app.design_graph.design_plot)
+            self._filter.generate_filter(app.design_graph.design_plot, fs)
         except Exception as e:
             popup = Popup(title="Generating filter failed.",
                           content=Label(text=do_block_from_str(str(e), 100)))

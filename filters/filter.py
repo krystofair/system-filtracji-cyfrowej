@@ -19,11 +19,12 @@ class IFilter(abc.ABC):
     filter_kind = ''  # part of filter name showed after '#' (FIR or IIR) to inform user.
 
     @abc.abstractmethod
-    def generate_filter(self, profile):
+    def generate_filter(self, profile, sample_rate):
         """Method which will be called for compute coefficients of filters
         in their internal representation. This method can be called in thread (executor).
         Args:
             profile: Look at `Profile` class to see what field it contain.
+            sample_rate: Sampling frequency
         """
         pass
 
@@ -77,9 +78,6 @@ class IFilter(abc.ABC):
         Process that samples. And keep state.
             samples - N-D np array, where N is amount of channels.
         """
-        pass
-
-    def set_sample_rate(self, sample_rate):
         pass
 
 

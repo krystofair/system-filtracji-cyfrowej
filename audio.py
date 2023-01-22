@@ -76,6 +76,18 @@ def do_block_from_str(string, size):
     return '\n'.join(result)
 
 
+def get_sample_rate_from_file():
+    read_file_path = store.get('audio-file-path')
+    if read_file_path is None:
+        return None
+    file_path = read_file_path[0]
+    try:
+        with soundfile.SoundFile(file_path) as audio_file:
+            return audio_file.samplerate
+    except Exception:
+        return None
+
+
 def processing_samples(read_path, the_filter, blockrate=1):
     write_path = TMP_FILE
     try:
@@ -97,7 +109,7 @@ def processing_samples(read_path, the_filter, blockrate=1):
             resampled = the_filter.process(samples)
             write_file.write(resampled)
             total_processed_blocks += 1
-            percent = total_processed_blocks*BLOCKS/all_blocks*100
+            percent = total_processed_blocks * BLOCKS / all_blocks * 100
             if progress_bar:
                 progress_bar.value = percent
     except Exception as e:

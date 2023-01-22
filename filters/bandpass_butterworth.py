@@ -17,26 +17,12 @@ class BandpassButterworthFilter(IFilter):
         self.order = 1
         self.b = []
         self.a = [1]
-        self.fs = 44100
-        # self.cascade = None
+        self.fs = None
 
-    # def add_to_cascade(self, band_start, band_stop, profile):
-    #     if len(profile.get_points_as_list()) < 2 and len(profile.get_points_as_list()) % 2 == 1:
-    #         return False
-    #     if self.cascade is None:
-    #         self.cascade = []
-    #     b, a = butter(self.order, [band_start, band_stop], btype='bandpass', output='ba', fs=self.fs)
-    #     self.cascade.append(
-    #         {
-    #             'b': b,
-    #             'a': a
-    #         }
-    #     )
-    #     return True
-
-    def generate_filter(self, profile):
+    def generate_filter(self, profile, sample_rate):
         if len(profile.get_points_as_list()) < 2 and len(profile.get_points_as_list()) % 2 == 1:
             return []
+        self.fs = sample_rate
         boundary_freq = profile.get_points_as_list()
         band_start, band_stop = boundary_freq[0][0], boundary_freq[-1][0]
         self.b, self.a = butter(self.order, [band_start, band_stop], btype='bandpass', output='ba',

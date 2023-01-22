@@ -11,7 +11,7 @@ class TestFilterIIR(IFilter):
     filter_id = "TestowyFilterekIIR"
     filter_kind = "iir"
 
-    def generate_filter(self, profile):
+    def generate_filter(self, profile, fs):
         points = profile.get_points_as_list()
         if len(points) < 2:
             return

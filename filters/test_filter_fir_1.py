@@ -2,14 +2,11 @@
 #  This file is part of "System Filtracji Cyfrowej", which is released under GPLv2 license.
 #  Created by Krzysztof Kłapyta.
 
-from collections import deque
-
 import numpy as np
 from kivy.logger import Logger
-from scipy.interpolate import CubicSpline
 from scipy.signal import firls, freqz, lfilter
 
-from .filter import IFilter, FilterMenu, FilterUtils
+from .filter import IFilter, FilterMenu
 
 
 class TestFilterFIR(IFilter):
@@ -18,28 +15,22 @@ class TestFilterFIR(IFilter):
     options_menu = None
 
     def __init__(self):
-        self.log = Logger
         self._coeffs = None  # aka. numerator coefficients
         self.taps = 99
-        self.samples = deque(maxlen=self.taps*2)
-        self.state = None
+        self.denominator_a = np.zeros(98)  # 98 = len(self.taps) - 1
+        self.denominator_a[0] = 1
         self.sample_rate = None
 
-    def generate_filter(self, profile):
+    def generate_filter(self, profile, fs):
         points = profile.get_points_as_list()
         if len(points) < 2:
             return
         freqs, amps_dB = zip(*points)
-        # XXX Can use interpolation method from profile
-        try:
-            interpolation = profile.interp_func(freqs, amps_dB)
-        except Exception:
-            interpolation = CubicSpline(freqs, amps_dB)
+        interpolation = profile.interp_func(freqs, amps_dB)
         bands = list(range(freqs[0], freqs[len(freqs) - 1]))
         bands.append(bands[len(bands) - 1]) if not len(bands) % 2 == 0 else None
         desired = np.power(10, interpolation(bands) / 20)
-        if not self.sample_rate:
-            self.sample_rate = FilterUtils.compute_sample_rate(profile)
+        self.sample_rate = fs
         try:
             self._coeffs = firls(self.taps, bands, desired, fs=self.sample_rate)
         except Exception as e:
@@ -50,8 +41,7 @@ class TestFilterFIR(IFilter):
     def frequency_response(self):
         if self._coeffs is None:
             return []
-        fs0 = self.sample_rate if self.sample_rate else 44100
-        freq, response = freqz(self._coeffs, fs=fs0)
+        freq, response = freqz(self._coeffs, fs=self.sample_rate)
         ir_points = list(zip(freq, 20 * np.log(np.abs(response))))
         return ir_points
 
@@ -99,12 +89,7 @@ that method take the points by pair."""
     def menu(self):
         return FilterMenu()
 
-    def set_sample_rate(self, sample_rate):
-        self.sample_rate = sample_rate
-
     def process(self, samples_to_process, *args, **kwargs):
-        denominator_a = np.zeros(len(self._coeffs)-1)
-        denominator_a[0] = 1
-        ps = lfilter(self._coeffs, denominator_a, samples_to_process, axis=0)
+        ps = lfilter(self._coeffs, self.denominator_a, samples_to_process, axis=0)
         return ps
 
