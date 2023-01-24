@@ -68,16 +68,22 @@ class FileMenu(ContextMenu):
 
     def save_as(self, path):
         cp = None
+        failure = False
         try:
             cp = subprocess.run(['copy', audio.TMP_FILE, path], capture_output=True)
         except FileNotFoundError:
             cp = subprocess.run(['cp', audio.TMP_FILE, path])
-
-        if cp and cp.returncode == 0:
+        except Exception:
+            failure = True
+        if not failure and cp and cp.returncode == 0:
             popup = Popup(title="Success",
                           content=Label(text="File was saved."),
                           size_hint=(0.8, 0.8))
-            popup.open()
+        else:
+            popup = Popup(title="Failure",
+                          content=Label(text="File was not saved."),
+                          size_hint=(0.8, 0.8))
+        popup.open()
 
     # def load_filter_from_file(self):
     #     Logger.info('load_filter_cb release')
