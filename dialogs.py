@@ -15,7 +15,7 @@ from kivy.uix.textinput import TextInput
 
 
 def audio_file_chooser_dialog(start_path):
-    popup = Popup()
+    popup = Popup(title="Open file by double click on it.")
     popup.size_hint = (0.9, 0.9)
 
     def exit_action(sel, touch):
@@ -30,7 +30,7 @@ def audio_file_chooser_dialog(start_path):
 
 
 def profile_chooser_dialog(start_path, action, *functions):
-    popup = Popup()
+    popup = Popup(title="Open file by double click on it.")
     popup.size_hint = (0.9, 0.9)
 
     def exit_action(a, f, sel, touch):
