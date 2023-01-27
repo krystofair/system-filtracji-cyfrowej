@@ -51,7 +51,7 @@ class SaveDialog:
     def __init__(self, save_action, **kwargs):
         super().__init__(**kwargs)
         self.save_callback = save_action
-        self.popup = Popup()
+        self.popup = Popup(title="Saving file")
         self.popup.size_hint = (0.9, 0.9)
         self.layout = builder.Builder.load_file("gui/save_dialog.kv")
         self.popup.add_widget(self.layout)
