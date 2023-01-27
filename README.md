@@ -1,4 +1,5 @@
-# System Filtracji Cyfrowej
+# System Filtracji Cyfrowej - Digital Signal Filtration System
+
 ## Zależności - requirements
 * certifi==2021.10.8
 * charset-normalizer==2.0.9
@@ -20,14 +21,13 @@
 * urllib3==1.26.7
 
 ## Uruchomienie - installation/run
-Należy zainstalować moduł `venv` dla języka Python w systemie.
-A następnie wykorzystać go używając komendy `python -m venv .`,
-gdzie "." to aktualny katalog repozytorium w którym się znajdujemy.
-Uruchomić wirtualne środowisko za pomocą: `source ./Scripts/activate`,
-a w nim zainstalować zależności używając: `pip install -r requirements.txt`.
-Można upewnić się czy program "pip" na pewno odnosi się do stworzonego środowiska przez użycie
-`which pip` - na pewno działa w systemie linux, lub w konsoli "git bash".
-Będąc dalej w wirtualnym środowisku uruchomić plik main_window.py `python main_window.py`
+At first install module `venv` for Python in operating system, but this module is probably
+preinstalled with Python. This software used Python in 3.9 version. Using command `python -m venv .`,
+where '.' is current repo directory, we are in. Source just installed virtual env by command
+`source ./Scripts/activate`. There probably be a indicator about now is using virtual env.
+Now is the moment, in which you can install requirements, use command: `pip install -r requirements.txt`.
+On Windows system, which I use for this command you can use git-bash console.
+To run program eventually, in virtual env type: `python main_window.py` and push enter.
 
 ## Release - RUN
 If you don't know how to work in terminal then now you can download zip folder with virtual
