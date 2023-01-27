@@ -29,3 +29,7 @@ Można upewnić się czy program "pip" na pewno odnosi się do stworzonego środ
 `which pip` - na pewno działa w systemie linux, lub w konsoli "git bash".
 Będąc dalej w wirtualnym środowisku uruchomić plik main_window.py `python main_window.py`
 
+## Release - RUN
+If you don't know how to work in terminal then now you can download zip folder with virtual
+environment in it. There is special script for Windows and Linux called `run` You can simply click
+twice to run this script then application should run automatically.
